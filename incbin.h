@@ -51,8 +51,8 @@
  * @endcode
  */
 #define INCBIN_EXTERN(NAME) \
-    INCBIN_EXTERNAL INCBIN_ALIGN unsigned char g ## NAME ## Data[]; \
-    INCBIN_EXTERNAL unsigned int g ## NAME ## Size
+    INCBIN_EXTERNAL const INCBIN_ALIGN unsigned char g ## NAME ## Data[]; \
+    INCBIN_EXTERNAL const unsigned int g ## NAME ## Size
 
 /**
  * @brief Include a binary file into the current translation unit.
