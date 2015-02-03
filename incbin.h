@@ -66,6 +66,14 @@
  * @param NAME The name to associate with this binary data (as an identifier.)
  * @param FILENAME The file to include (as a string literal.)
  *
+ * @code
+ * INCBIN(Icon, "icon.png");
+ *
+ * // Now you have the following symbols:
+ * // unsigned char gIconData[];
+ * // unsigned int gIconSize;
+ * @endcode
+ *
  * @warning This must be used in global scope
  *
  * To externally reference the data included by this in another translation unit
