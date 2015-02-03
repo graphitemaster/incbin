@@ -4,12 +4,19 @@ Include binary files in your C/C++ applications with ease
 
 ## Example
 
-    #include "intbin.h"
+    #include "incbin.h"
 
     INCBIN(Icon, "icon.png");
 
     // This translation unit now has two symbols
     // gIconData (unsigned char[])
+    // gIconSize (unsigned int)
+
+    // Reference in other translation units like this
+    INCBIN_EXTERN(Icon);
+
+    // This translation unit now has two extern symbols
+    // gIconData (extern unsigned char[])
     // gIconSize (unsigned int)
 
 ## Portability
