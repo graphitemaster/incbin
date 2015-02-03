@@ -93,10 +93,4 @@
             "  .int g" #NAME "Size - g" #NAME "\n"); \
     INCBIN_EXTERN(NAME)
 
-#undef INCBIN_STRINGIZE
-#undef INCBIN_STR
-#undef INCBIN_EXTERNAL
-#undef INCBIN_ALIGN
-#undef INCBIN_ALIGNMENT
-
 #endif
