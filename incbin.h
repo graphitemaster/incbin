@@ -28,6 +28,18 @@
 #  define INCBIN_EXTERNAL extern
 #endif
 
+#ifdef __APPLE__
+#  define INCBIN_SECTION         ".const_data\n"
+#  define INCBIN_GLOBAL(NAME)    ".globl " #NAME "\n"
+#  define INCBIN_INT             ".long "
+#  define INCBIN_TYPE(...)
+#else
+#  define INCBIN_SECTION         ".section .rodata\n"
+#  define INCBIN_GLOBAL(NAME)    ".global " #NAME "\n"
+#  define INCBIN_INT             ".int "
+#  define INCBIN_TYPE(NAME)      ".type " #NAME ", @object\n"
+#endif
+
 #define INCBIN_STR(X) #X
 #define INCBIN_STRINGIZE(X) INCBIN_STR(X)
 
@@ -80,17 +92,18 @@
  * please @see INCBIN_EXTERN.
  */
 #define INCBIN(NAME, FILENAME) \
-    __asm__(".section .rodata\n" \
-            ".global g" #NAME "\n" \
-            ".type g" #NAME ", @object\n" \
-            ".align " INCBIN_STRINGIZE(INCBIN_ALIGNMENT) " \n" \
+    __asm__(INCBIN_SECTION \
+            INCBIN_GLOBAL(g ## NAME) \
+            INCBIN_TYPE(g ## NAME) \
+            ".align " INCBIN_STRINGIZE(INCBIN_ALIGNMENT) "\n" \
             "g" #NAME ":\n" \
-            "  .incbin \"" FILENAME "\"\n" \
-            ".global g" #NAME "Size\n" \
-            ".type g" #NAME "Size, @object\n" \
-            ".align " INCBIN_STRINGIZE(INCBIN_ALIGNMENT) " \n" \
+                ".incbin \"" FILENAME "\"\n" \
+            INCBIN_GLOBAL(g ## NAME ## Size) \
+            INCBIN_TYPE(g ## NAME ## Size) \
+            ".align " INCBIN_STRINGIZE(INCBIN_ALIGNMENT) "\n" \
             "g" #NAME "Size:\n" \
-            "  .int g" #NAME "Size - g" #NAME "\n"); \
+                INCBIN_INT "g" #NAME "Size - g" #NAME "\n" \
+    ); \
     INCBIN_EXTERN(NAME)
 
 #endif
