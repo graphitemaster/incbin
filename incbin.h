@@ -32,11 +32,13 @@
 #  define INCBIN_SECTION         ".const_data\n"
 #  define INCBIN_GLOBAL(NAME)    ".globl " #NAME "\n"
 #  define INCBIN_INT             ".long "
+#  define INCBIN_MANGLE          "_"
 #  define INCBIN_TYPE(...)
 #else
 #  define INCBIN_SECTION         ".section .rodata\n"
 #  define INCBIN_GLOBAL(NAME)    ".global " #NAME "\n"
 #  define INCBIN_INT             ".int "
+#  define INCBIN_MANGLE
 #  define INCBIN_TYPE(NAME)      ".type " #NAME ", @object\n"
 #endif
 
@@ -96,13 +98,13 @@
             INCBIN_GLOBAL(g ## NAME) \
             INCBIN_TYPE(g ## NAME) \
             ".align " INCBIN_STRINGIZE(INCBIN_ALIGNMENT) "\n" \
-            "g" #NAME ":\n" \
+            INCBIN_MANGLE "g" #NAME ":\n" \
                 ".incbin \"" FILENAME "\"\n" \
             INCBIN_GLOBAL(g ## NAME ## Size) \
             INCBIN_TYPE(g ## NAME ## Size) \
             ".align " INCBIN_STRINGIZE(INCBIN_ALIGNMENT) "\n" \
-            "g" #NAME "Size:\n" \
-                INCBIN_INT "g" #NAME "Size - g" #NAME "\n" \
+            INCBIN_MANGLE "g" #NAME "Size:\n" \
+                INCBIN_INT INCBIN_MANGLE "g" #NAME "Size - " INCBIN_MANGLE "g" #NAME "\n" \
     ); \
     INCBIN_EXTERN(NAME)
 
