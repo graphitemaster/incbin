@@ -95,16 +95,16 @@
  */
 #define INCBIN(NAME, FILENAME) \
     __asm__(INCBIN_SECTION \
-            INCBIN_GLOBAL(g ## NAME) \
-            INCBIN_TYPE(g ## NAME) \
+            INCBIN_GLOBAL(g ## NAME ## Data) \
+            INCBIN_TYPE(g ## NAME ## Data) \
             ".align " INCBIN_STRINGIZE(INCBIN_ALIGNMENT) "\n" \
-            INCBIN_MANGLE "g" #NAME ":\n" \
+            INCBIN_MANGLE "g" #NAME "Data:\n" \
                 ".incbin \"" FILENAME "\"\n" \
             INCBIN_GLOBAL(g ## NAME ## Size) \
             INCBIN_TYPE(g ## NAME ## Size) \
             ".align " INCBIN_STRINGIZE(INCBIN_ALIGNMENT) "\n" \
             INCBIN_MANGLE "g" #NAME "Size:\n" \
-                INCBIN_INT INCBIN_MANGLE "g" #NAME "Size - " INCBIN_MANGLE "g" #NAME "\n" \
+                INCBIN_INT INCBIN_MANGLE "g" #NAME "Size - " INCBIN_MANGLE "g" #NAME "Data\n" \
     ); \
     INCBIN_EXTERN(NAME)
 
