@@ -61,11 +61,13 @@
  *
  * // Now you have the following symbols:
  * // extern unsigned char gFooData[];
+ * // extern const unsigned char gFooEnd;
  * // extern unsigned int gFooSize;
  * @endcode
  */
 #define INCBIN_EXTERN(NAME) \
     INCBIN_EXTERNAL const INCBIN_ALIGN unsigned char g ## NAME ## Data[]; \
+    INCBIN_EXTERNAL const INCBIN_ALIGN unsigned char g ## NAME ## End; \
     INCBIN_EXTERNAL const unsigned int g ## NAME ## Size
 
 /**
@@ -100,11 +102,16 @@
             ".align " INCBIN_STRINGIZE(INCBIN_ALIGNMENT) "\n" \
             INCBIN_MANGLE "g" #NAME "Data:\n" \
                 ".incbin \"" FILENAME "\"\n" \
+            INCBIN_GLOBAL(g ## NAME ## End) \
+            INCBIN_TYPE(g ## NAME ## End) \
+            ".align 1\n" \
+            INCBIN_MANGLE "g" #NAME "End:\n" \
+                INCBIN_INT "1\n"\
             INCBIN_GLOBAL(g ## NAME ## Size) \
             INCBIN_TYPE(g ## NAME ## Size) \
             ".align " INCBIN_STRINGIZE(INCBIN_ALIGNMENT) "\n" \
             INCBIN_MANGLE "g" #NAME "Size:\n" \
-                INCBIN_INT INCBIN_MANGLE "g" #NAME "Size - " INCBIN_MANGLE "g" #NAME "Data\n" \
+                INCBIN_INT INCBIN_MANGLE "g" #NAME "End - " INCBIN_MANGLE "g" #NAME "Data\n" \
     ); \
     INCBIN_EXTERN(NAME)
 
