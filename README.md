@@ -24,14 +24,15 @@ Include binary files in your C/C++ applications with ease
 ## Portability
 
 Known to work on the following compilers
-    * GCC
-    * Clang
-    * PathScale
-    * Intel
-    * Solaris
-    * Green Hills
-    * XCode
-    * ArmCC
+
+* GCC
+* Clang
+* PathScale
+* Intel
+* Solaris
+* Green Hills
+* XCode
+* ArmCC
 
 If your compiler is not listed, as long as it supports GCC inline assembler, this
 should work.
