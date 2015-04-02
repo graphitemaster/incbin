@@ -41,7 +41,11 @@ int main(int argc, char **argv) {
 
     if (argc == 0) {
 usage:
-        fprintf(stderr, "%s [files...] [-o output]\n", argv[-1]);
+        fprintf(stderr, "%s [-help] | <files> | [-o output]\n", argv[-1]);
+        fprintf(stderr, "   -o       - output file [default is \"incbin.c\"]\n");
+        fprintf(stderr, "   -help    - this\n");
+        fprintf(stderr, "example:\n");
+        fprintf(stderr, "   %s icon.png music.mp3 -o file.c\n", argv[-1]);
         return 1;
     }
 
@@ -56,6 +60,10 @@ usage:
                 goto usage;
             continue;
         }
+
+        // [-help]
+        if (!strcmp(argv[i], "-help"))
+            goto usage;
 
         // [files...]
         std::ifstream input(argv[i]);
