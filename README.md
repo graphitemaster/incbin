@@ -64,7 +64,7 @@ included binary data respectively.
 
 Supporting MSVC is slightly harder as MSVC lacks an inline assembler which can
 include data. To support this we ship a tool which can process source files
-containing `INCBIN` macro usage and generate an external source files containing
+containing `INCBIN` macro usage and generate an external source file containing
 the data of all of them combined. This file is named `incbin.c` by default.
 Just include it into your build and use the `incbin.h` to reference data as
 needed. It's suggested you integrate this tool as part of your projects's
