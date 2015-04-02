@@ -8,27 +8,48 @@ Include binary files in your C/C++ applications with ease
 
     INCBIN(Icon, "icon.png");
 
-    // This translation unit now has two symbols
-    // gIconData (unsigned char[])
-    // gIconSize (unsigned int)
+    // This translation unit now has three symbols
+    // const unsigned char gIconData[];
+    // const unsigned char *gIconEnd;
+    // const unsigned int gIconSize;
 
     // Reference in other translation units like this
     INCBIN_EXTERN(Icon);
 
     // This translation unit now has two extern symbols
-    // gIconData (extern unsigned char[])
-    // gIconSize (unsigned int)
+    // extern const unsigned char gIconData[];
+    // extern const unsigned char *gIconEnd;
+    // extern const unsigned int gIconSize;
 
 ## Portability
 
-This will work for any architecture, on all compilers that support GCC inline
-assembler (which is almost all compilers with a few notable exceptions.)
+Known to work on the following compilers
+    * GCC
+    * Clang
+    * PathScale
+    * Intel
+    * Solaris
+    * Green Hills
+    * XCode
+    * ArmCC
+
+If your compiler is not listed, as long as it supports GCC inline assembler, this
+should work.
+
+MSVC is not supported.
 
 ## Alignment
 
 The data included by this tool will be aligned on the architectures word boundary
-unless `__SSE__` or `__neon__` is defined, then it's aligned on a 16-byte boundary,
-so that it can effectively be used by SIMD code safely.
+unless `__SSE__`, `__AVX__` or `__neon__` is defined, then it's aligned on a byte
+boundary that respects SIMD convention. The table of the alignments for SIMD
+alignment is as follows
+
+| SIMD | Alignment |
+|------|-----------|
+| SSE  | 16        |
+| Neon | 16        |
+| AVX  | 32        |
 
 ## Explanation
 
@@ -41,5 +62,5 @@ included binary data respectively.
 
 ## Miscellaneous
 
-Documentation for the API is provided by the header. For licensing information
-see UNLICENSE.
+Documentation for the API is provided by the header using Doxygen notation.
+For licensing information see UNLICENSE.
