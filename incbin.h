@@ -95,13 +95,20 @@
  * To externally reference the data included by this in another translation unit
  * please @see INCBIN_EXTERN.
  */
+
+#ifndef __ghs__
+#define INCMACRO ".incbin"
+#else
+#define INCMACRO "\tINCBIN"
+#endif
+
 #define INCBIN(NAME, FILENAME) \
     __asm__(INCBIN_SECTION \
             INCBIN_GLOBAL(g ## NAME ## Data) \
             INCBIN_TYPE(g ## NAME ## Data) \
             ".align " INCBIN_STRINGIZE(INCBIN_ALIGNMENT) "\n" \
             INCBIN_MANGLE "g" #NAME "Data:\n" \
-                ".incbin \"" FILENAME "\"\n" \
+            INCMACRO " \"" FILENAME "\"\n" \
             INCBIN_GLOBAL(g ## NAME ## End) \
             INCBIN_TYPE(g ## NAME ## End) \
             ".align 1\n" \
