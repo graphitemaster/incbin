@@ -75,7 +75,7 @@
  */
 #define INCBIN_EXTERN(NAME) \
     INCBIN_EXTERNAL const INCBIN_ALIGN unsigned char g ## NAME ## Data[]; \
-    INCBIN_EXTERNAL const INCBIN_ALIGN unsigned char g ## NAME ## End; \
+    INCBIN_EXTERNAL const INCBIN_ALIGN unsigned char *g ## NAME ## End; \
     INCBIN_EXTERNAL const unsigned int g ## NAME ## Size
 
 /**
@@ -104,6 +104,10 @@
  * To externally reference the data included by this in another translation unit
  * please @see INCBIN_EXTERN.
  */
+#ifdef _MSC_VER
+#define INCBIN(NAME, FILENAME) \
+    INCBIN_EXTERN(NAME)
+#else
 #define INCBIN(NAME, FILENAME) \
     __asm__(INCBIN_SECTION \
             INCBIN_GLOBAL(g ## NAME ## Data) \
@@ -124,4 +128,5 @@
     ); \
     INCBIN_EXTERN(NAME)
 
+#endif
 #endif

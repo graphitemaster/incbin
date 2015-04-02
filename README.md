@@ -33,11 +33,10 @@ Known to work on the following compilers
 * Green Hills
 * XCode
 * ArmCC
+* MSVC _See MSVC below_
 
 If your compiler is not listed, as long as it supports GCC inline assembler, this
 should work.
-
-MSVC is not supported.
 
 ## Alignment
 
@@ -60,6 +59,16 @@ directive of the inline assembler. It then uses the assembler to calculate the
 size of the included binary and exports two global symbols that can be externally
 referenced in other translation units which contain the data and size of the
 included binary data respectively.
+
+## MSVC
+
+Supporting MSVC is slightly harder as MSVC lacks an inline assembler which can
+include data. To support this we ship a tool which can process source files
+containing `INCBIN` macro usage and generate an external source files containing
+the data of all of them combined. This file is always named `incbin.c`. Just include
+it into your build and use the `incbin.h` to reference data as needed. It's
+suggested you integrate this tool as part of your projects's pre-build events
+so that this can be automated.
 
 ## Miscellaneous
 
