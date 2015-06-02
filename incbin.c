@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
     if (argc == 0) {
 usage:
         fprintf(stderr, "%s [-help] | <files> | [-o output]\n", argv[-1]);
-        fprintf(stderr, "   -o       - output file [default is \"incbin.c\"]\n");
+        fprintf(stderr, "   -o       - output file [default is \"data.c\"]\n");
         fprintf(stderr, "   -help    - this\n");
         fprintf(stderr, "example:\n");
         fprintf(stderr, "   %s icon.png music.mp3 -o file.c\n", argv[-1]);
