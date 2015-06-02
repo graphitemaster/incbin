@@ -58,8 +58,10 @@ usage:
         if (!strcmp(argv[i], "-o")) {
             if (i + 1 < argc) {
                 strcpy(outfile, argv[i + 1]);
-                memmove(argv+i, argv+i+2, (argc-i) * sizeof(char*));
-                i++;
+                if (i + 2 < argc)
+                    memmove(argv+i, argv+i+2, (argc-i) * sizeof(char*));
+                argc -= 2;
+                i++; /* Skip */
             }
         }
         if (!strcmp(argv[i], "-help"))
