@@ -68,7 +68,7 @@ usage:
 
     FILE *out = fopen(outfile, "w");
     if (!out) {
-        fprintf(stderr, "failed to open `%s' for output\n");
+        fprintf(stderr, "failed to open `%s' for output\n", outfile);
         return 1;
     }
 
@@ -80,7 +80,7 @@ usage:
     for (int i = 0; i < argc; i++) {
         FILE *fp = fopen(argv[i], "r");
         if (!fp) {
-            fprintf(stderr, "failed to open `%s' for reading\n");
+            fprintf(stderr, "failed to open `%s' for reading\n", argv[i]);
             fclose(out);
             return 1;
         }
