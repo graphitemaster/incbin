@@ -31,6 +31,8 @@ Known to work on the following compilers
 * Intel
 * Solaris
 * Green Hills
+* SNC (ProDG)
+* Diab C++ (WindRiver)
 * XCode
 * ArmCC
 * MSVC _See MSVC below_
