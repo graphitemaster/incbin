@@ -22,12 +22,19 @@
 # endif
 #endif
 
-#define INCBIN_ALIGN __attribute__((aligned(INCBIN_ALIGNMENT)))
+#ifndef _MSC_VER
+#  define INCBIN_ALIGN __attribute__((aligned(INCBIN_ALIGNMENT)))
+#else
+#  define INCBIN_ALIGN __declspec(align(INCBIN_ALIGNMENT))
+#endif
 
+/* INCBIN_CONST is used by incbin.c generated files */
 #ifdef __cplusplus
 #  define INCBIN_EXTERNAL extern "C"
+#  define INCBIN_CONST    extern const
 #else
 #  define INCBIN_EXTERNAL extern
+#  define INCBIN_CONST    const
 #endif
 
 #ifdef __APPLE__
