@@ -16,7 +16,7 @@ Include binary files in your C/C++ applications with ease
     // Reference in other translation units like this
     INCBIN_EXTERN(Icon);
 
-    // This translation unit now has two extern symbols
+    // This translation unit now has three extern symbols
     // extern const unsigned char gIconData[];
     // extern const unsigned char *gIconEnd;
     // extern const unsigned int gIconSize;
