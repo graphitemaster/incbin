@@ -1,8 +1,16 @@
+#ifdef _MSC_VER
+#  define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <limits.h>
+
+#ifndef PATH_MAX
+#  define PATH_MAX MAX_PATH
+#endif
 
 #define SEARCH_PATHS_MAX 64
 
@@ -47,7 +55,11 @@ static FILE *open_file(const char *name, const char *mode, const char (*searches
     for (i = 0; i < count; i++) {
         char buffer[FILENAME_MAX + PATH_MAX];
         FILE *fp;
+#ifndef _MSC_VER
         snprintf(buffer, sizeof(buffer), "%s/%s", searches[i], name);
+#else
+        _snprintf(buffer, sizeof(buffer), "%s/%s", searches[i], name);
+#endif
         if ((fp = fopen(buffer, mode)))
             return fp;
     }
