@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
 
     if (argc == 0) {
 usage:
-        fprintf(stderr, "%s [-help] [-Lpath...] | <files> | [-o output]\n", argv[-1]);
+        fprintf(stderr, "%s [-help] [-Ipath...] | <files> | [-o output]\n", argv[-1]);
         fprintf(stderr, "   -o       - output file [default is \"data.c\"]\n");
         fprintf(stderr, "   -help    - this\n");
         fprintf(stderr, "example:\n");
@@ -81,8 +81,8 @@ usage:
                 continue;
             }
         }
-        if (!strncmp(argv[i], "-L", 2)) {
-            char *name = argv[i] + 2; // skip "-L";
+        if (!strncmp(argv[i], "-I", 2)) {
+            char *name = argv[i] + 2; // skip "-I";
             if (paths >= SEARCH_PATHS_MAX) {
                 fprintf(stderr, "maximum search paths exceeded\n");
                 return 1;
