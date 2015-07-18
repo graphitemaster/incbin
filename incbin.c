@@ -2,6 +2,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <limits.h>
+
+#define SEARCH_PATHS_MAX 64
 
 static int fline(char **line, size_t *n, FILE *fp) {
     int chr;
@@ -39,10 +42,21 @@ static int fline(char **line, size_t *n, FILE *fp) {
     return pos - *line;
 }
 
-int main(int argc, char **argv) {
-    int ret = 0;
-    char outfile[FILENAME_MAX] = "data.c";
+static FILE *open_file(const char *name, const char *mode, const char (*searches)[PATH_MAX], int count) {
     int i;
+    for (i = 0; i < count; i++) {
+        char buffer[FILENAME_MAX + PATH_MAX];
+        FILE *fp;
+        snprintf(buffer, sizeof(buffer), "%s/%s", searches[i], name);
+        if ((fp = fopen(buffer, mode)))
+            return fp;
+    }
+    return NULL;
+}
+
+int main(int argc, char **argv) {
+    int ret, i, paths;
+    char outfile[FILENAME_MAX] = "data.c", search_paths[SEARCH_PATHS_MAX][PATH_MAX];
     FILE *out = NULL;
 
     argc--;
@@ -50,7 +64,7 @@ int main(int argc, char **argv) {
 
     if (argc == 0) {
 usage:
-        fprintf(stderr, "%s [-help] | <files> | [-o output]\n", argv[-1]);
+        fprintf(stderr, "%s [-help] [-Lpath...] | <files> | [-o output]\n", argv[-1]);
         fprintf(stderr, "   -o       - output file [default is \"data.c\"]\n");
         fprintf(stderr, "   -help    - this\n");
         fprintf(stderr, "example:\n");
@@ -58,7 +72,7 @@ usage:
         return 1;
     }
 
-    for (i = 0; i < argc; i++) {
+    for (i = 0, paths = 0; i < argc; i++) {
         if (!strcmp(argv[i], "-o")) {
             if (i + 1 < argc) {
                 strcpy(outfile, argv[i + 1]);
@@ -66,6 +80,17 @@ usage:
                 argc -= 2; /* Eliminate "-o <thing>" */
                 continue;
             }
+        }
+        if (!strncmp(argv[i], "-L", 2)) {
+            char *name = argv[i] + 2; // skip "-L";
+            if (paths >= SEARCH_PATHS_MAX) {
+                fprintf(stderr, "maximum search paths exceeded\n");
+                return 1;
+            }
+            strcpy(search_paths[paths++], name);
+            memmove(argv+i, argv+i+1, (argc-1) * sizeof(char*));
+            argc--;
+            continue;
         }
         if (!strcmp(argv[i], "-help"))
             goto usage;
@@ -83,7 +108,7 @@ usage:
     fprintf(out, "#endif\n\n");
 
     for (i = 0; i < argc; i++) {
-        FILE *fp = fopen(argv[i], "r");
+        FILE *fp = open_file(argv[i], "r", search_paths, paths);
         char *line = NULL;
         size_t size = 0;
         if (!fp) {
@@ -112,7 +137,7 @@ usage:
             fprintf(out, "INCBIN_CONST INCBIN_ALIGN unsigned char g%sData[] = {\n    ", name);
             *--end = '\0';
             file++;
-            if (!(f = fopen(file, "rb"))) {
+            if (!(f = open_file(file, "rb", search_paths, paths))) {
                 fprintf(stderr, "failed to include data `%s'\n", file);
                 goto end;
             } else {
