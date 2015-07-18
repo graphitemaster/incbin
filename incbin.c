@@ -66,6 +66,7 @@ int main(int argc, char **argv) {
 usage:
         fprintf(stderr, "%s [-help] [-Ipath...] | <files> | [-o output]\n", argv[-1]);
         fprintf(stderr, "   -o       - output file [default is \"data.c\"]\n");
+        fprintf(stderr, "   -I<path> - specify an include path for the tool to use\n");
         fprintf(stderr, "   -help    - this\n");
         fprintf(stderr, "example:\n");
         fprintf(stderr, "   %s icon.png music.mp3 -o file.c\n", argv[-1]);
