@@ -29,13 +29,16 @@ Known to work on the following compilers
 * Clang
 * PathScale
 * Intel
-* Solaris
+* Solaris & Sun Studio
 * Green Hills
 * SNC (ProDG)
 * Diab C++ (WindRiver)
 * XCode
 * ArmCC
 * RealView
+* Stratus VOS C
+* TinyCC
+* cparser & libfirm
 * MSVC _See MSVC below_
 
 If your compiler is not listed, as long as it supports GCC inline assembler, this
