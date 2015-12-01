@@ -48,7 +48,11 @@
 #  define INCBIN_GLOBAL(NAME)    ".global " #NAME "\n"
 #  define INCBIN_INT             ".int "
 #  define INCBIN_MANGLE
-#  define INCBIN_TYPE(NAME)      ".type " #NAME ", @object\n"
+#ifdef __arm__
+#    define INCBIN_TYPE(NAME)      ".type " #NAME ", %object\n"
+#else
+#    define INCBIN_TYPE(NAME)      ".type " #NAME ", @object\n"
+#endif
 #endif
 
 #ifdef __ghs__
