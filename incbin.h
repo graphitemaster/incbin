@@ -48,7 +48,8 @@
 #  define INCBIN_GLOBAL(NAME)    ".global " #NAME "\n"
 #  define INCBIN_INT             ".int "
 #  define INCBIN_MANGLE
-#ifdef __arm__
+#if defined(__arm__) || /* GNU C & RealView */
+    defined(__arm)      /* Diab (WindRiver) */
 #    define INCBIN_TYPE(NAME)      ".type " #NAME ", %object\n"
 #else
 #    define INCBIN_TYPE(NAME)      ".type " #NAME ", @object\n"

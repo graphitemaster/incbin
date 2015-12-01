@@ -35,6 +35,7 @@ Known to work on the following compilers
 * Diab C++ (WindRiver)
 * XCode
 * ArmCC
+* RealView
 * MSVC _See MSVC below_
 
 If your compiler is not listed, as long as it supports GCC inline assembler, this
