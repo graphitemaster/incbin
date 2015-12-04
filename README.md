@@ -45,6 +45,9 @@ Known to work on the following compilers
 If your compiler is not listed, as long as it supports GCC inline assembler, this
 should work.
 
+## MISRA
+INCBIN can be used in MISRA C setting.
+
 ## Alignment
 
 The data included by this tool will be aligned on the architectures word boundary
