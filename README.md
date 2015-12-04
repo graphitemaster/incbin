@@ -36,6 +36,7 @@ Known to work on the following compilers
 * XCode
 * ArmCC
 * RealView
+* ImageCraft
 * Stratus VOS C
 * TinyCC
 * cparser & libfirm
