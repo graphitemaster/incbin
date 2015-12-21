@@ -97,6 +97,7 @@
 #  define INCBIN_SECTION         ".section .rodata\n"
 #  define INCBIN_GLOBAL(NAME)    ".global " #NAME "\n"
 #  define INCBIN_INT             ".int "
+#  define INCBIN_BYTE            ".byte "
 #if defined(__GNUC__)
 /*
  * GCC provides a predefined macro for assembler label prefixes that are expected
@@ -182,7 +183,7 @@
             INCBIN_TYPE(g ## NAME ## End) \
             INCBIN_ALIGN_BYTE \
             INCBIN_MANGLE "g" #NAME "End:\n" \
-                INCBIN_INT "1\n"\
+                INCBIN_BYTE "1\n"\
             INCBIN_GLOBAL(g ## NAME ## Size) \
             INCBIN_TYPE(g ## NAME ## Size) \
             INCBIN_ALIGN_HOST \
