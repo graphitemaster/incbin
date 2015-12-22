@@ -89,14 +89,14 @@
 #if defined(__APPLE__)
 /* The directives are different for Apple branded compilers */
 #  define INCBIN_SECTION         ".const_data\n"
-#  define INCBIN_GLOBAL(NAME)    ".globl " #NAME "\n"
+#  define INCBIN_GLOBAL(NAME)    ".globl " INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "\n"
 #  define INCBIN_INT             ".long "
 #  define INCBIN_MANGLE          "_"
 #  define INCBIN_BYTE            ".byte"
 #  define INCBIN_TYPE(...)
 #else
 #  define INCBIN_SECTION         ".section .rodata\n"
-#  define INCBIN_GLOBAL(NAME)    ".global " #NAME "\n"
+#  define INCBIN_GLOBAL(NAME)    ".global " INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "\n"
 #  define INCBIN_INT             ".int "
 #  if defined(__USER_LABEL_PREFIX__)
 #    define INCBIN_MANGLE        INCBIN_STRINGIZE(__USER_LABEL_PREFIX__)
@@ -105,10 +105,10 @@
 #  endif
 #  if defined(INCBIN_ARM)
 /* On arm assemblers, `@' is used as a line comment token */
-#    define INCBIN_TYPE(NAME)    ".type " #NAME ", %object\n"
+#    define INCBIN_TYPE(NAME)    ".type " INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME ", %object\n"
 #  else
 /* It's safe to use `@' on other architectures */
-#    define INCBIN_TYPE(NAME)    ".type " #NAME ", @object\n"
+#    define INCBIN_TYPE(NAME)    ".type " INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME ", @object\n"
 #  endif
 #  define INCBIN_BYTE            ".byte "
 #endif
@@ -164,9 +164,9 @@
  * @endcode
  */
 #define INCBIN_EXTERN(NAME) \
-    INCBIN_EXTERNAL const INCBIN_ALIGN unsigned char INCBIN_PREFIX ## NAME ## Data[]; \
-    INCBIN_EXTERNAL const INCBIN_ALIGN unsigned char *INCBIN_PREFIX ## NAME ## End; \
-    INCBIN_EXTERNAL const unsigned int INCBIN_PREFIX ## NAME ## Size
+    INCBIN_EXTERNAL const INCBIN_ALIGN unsigned char INCBIN_CONCATENATE(INCBIN_PREFIX, NAME ## Data)[]; \
+    INCBIN_EXTERNAL const INCBIN_ALIGN unsigned char *INCBIN_CONCATENATE(INCBIN_PREFIX, NAME ## End); \
+    INCBIN_EXTERNAL const unsigned int INCBIN_CONCATENATE(INCBIN_PREFIX, NAME ## Size)
 
 /**
  * @brief Include a binary file into the current translation unit.
@@ -200,18 +200,18 @@
 #else
 #define INCBIN(NAME, FILENAME) \
     __asm__(INCBIN_SECTION \
-            INCBIN_GLOBAL(INCBIN_PREFIX ## NAME ## Data) \
-            INCBIN_TYPE(INCBIN_PREFIX ## NAME ## Data) \
+            INCBIN_GLOBAL(NAME ## Data) \
+            INCBIN_TYPE(NAME ## Data) \
             INCBIN_ALIGN_HOST \
             INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "Data:\n" \
             INCBIN_MACRO " \"" FILENAME "\"\n" \
-            INCBIN_GLOBAL(INCBIN_PREFIX ## NAME ## End) \
-            INCBIN_TYPE(INCBIN_PREFIX ## NAME ## End) \
+            INCBIN_GLOBAL(NAME ## End) \
+            INCBIN_TYPE(NAME ## End) \
             INCBIN_ALIGN_BYTE \
             INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "End:\n" \
                 INCBIN_BYTE "1\n" \
-            INCBIN_GLOBAL(INCBIN_PREFIX ## NAME ## Size) \
-            INCBIN_TYPE(INCBIN_PREFIX ## NAME ## Size) \
+            INCBIN_GLOBAL(NAME ## Size) \
+            INCBIN_TYPE(NAME ## Size) \
             INCBIN_ALIGN_HOST \
             INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "Size:\n" \
                 INCBIN_INT INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "End - " \
