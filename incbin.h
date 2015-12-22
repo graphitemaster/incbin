@@ -92,28 +92,55 @@
 #  define INCBIN_GLOBAL(NAME)    ".globl " #NAME "\n"
 #  define INCBIN_INT             ".long "
 #  define INCBIN_MANGLE          "_"
+#  define INCBIN_BYTE            ".byte"
 #  define INCBIN_TYPE(...)
 #else
 #  define INCBIN_SECTION         ".section .rodata\n"
 #  define INCBIN_GLOBAL(NAME)    ".global " #NAME "\n"
 #  define INCBIN_INT             ".int "
-#if defined(__GNUC__)
-/*
- * GCC provides a predefined macro for assembler label prefixes that are expected
- * to be visible under C. This is more robust than assuming nothing here.
- */
+#  if defined(__USER_LABEL_PREFIX__)
 #    define INCBIN_MANGLE        INCBIN_STRINGIZE(__USER_LABEL_PREFIX__)
-#else
+#  else
 #    define INCBIN_MANGLE        ""
+#  endif
+#  if defined(INCBIN_ARM)
+/* On arm assemblers, `@' is used as a line comment token */
+#    define INCBIN_TYPE(NAME)    ".type " #NAME ", %object\n"
+#  else
+/* It's safe to use `@' on other architectures */
+#    define INCBIN_TYPE(NAME)    ".type " #NAME ", @object\n"
+#  endif
+#  define INCBIN_BYTE            ".byte "
 #endif
 
-#if defined(INCBIN_ARM)
-/* On arm assemblers, `@' is used as a line comment token */
-#    define INCBIN_TYPE(NAME)      ".type " #NAME ", %object\n"
-#else
-/* It's safe to use `@' on other architectures */
-#    define INCBIN_TYPE(NAME)      ".type " #NAME ", @object\n"
-#endif
+/**
+ * @breif Specify the prefix to use for symbol names.
+ *
+ * By default this is `g', producing symbols of the form:
+ * @code
+ * #include "incbin.h"
+ * INCBIN(Foo, "foo.txt");
+ *
+ * // Now you have the following symbols:
+ * // const unsigned char gFooData[];
+ * // const unsigned char *gFooEnd;
+ * // const unsigned int gFooSize;
+ * @endcode
+ *
+ * If however you specify a prefix before including: e.g:
+ * @code
+ * #define INCBIN_PREFIX incbin
+ * #include "incbin.h"
+ * INCBIN(Foo, "foo.txt");
+ *
+ * // Now you have the following symbols instead:
+ * // const unsigned char incbinFooData[];
+ * // const unsigned char *incbinFooEnd;
+ * // const unsigned int incbinFooSize;
+ * @endcode
+ */
+#if !defined(INCBIN_PREFIX)
+#  define INCBIN_PREFIX g
 #endif
 
 /**
@@ -122,8 +149,8 @@
  * Produces three external symbols that reference the binary data included in
  * another translation unit.
  *
- * The symbol names are a concatenation of "g" before *NAME*; with "Data", as well
- * as "End" and "Size" after. An example is provided below.
+ * The symbol names are a concatenation of `INCBIN_PREFIX' before *NAME*; with
+ * "Data", as well as "End" and "Size" after. An example is provided below.
  *
  * @param NAME The name given for the binary data
  *
@@ -131,15 +158,15 @@
  * INCBIN_EXTERN(Foo);
  *
  * // Now you have the following symbols:
- * // extern const unsigned char gFooData[];
- * // extern const unsigned char *gFooEnd;
- * // extern const unsigned int gFooSize;
+ * // extern const unsigned char <prefix>FooData[];
+ * // extern const unsigned char *<prefix>FooEnd;
+ * // extern const unsigned int <prefix>FooSize;
  * @endcode
  */
 #define INCBIN_EXTERN(NAME) \
-    INCBIN_EXTERNAL const INCBIN_ALIGN unsigned char g ## NAME ## Data[]; \
-    INCBIN_EXTERNAL const INCBIN_ALIGN unsigned char *g ## NAME ## End; \
-    INCBIN_EXTERNAL const unsigned int g ## NAME ## Size
+    INCBIN_EXTERNAL const INCBIN_ALIGN unsigned char INCBIN_PREFIX ## NAME ## Data[]; \
+    INCBIN_EXTERNAL const INCBIN_ALIGN unsigned char *INCBIN_PREFIX ## NAME ## End; \
+    INCBIN_EXTERNAL const unsigned int INCBIN_PREFIX ## NAME ## Size
 
 /**
  * @brief Include a binary file into the current translation unit.
@@ -147,8 +174,8 @@
  * Includes a binary file into the current translation unit, producing three symbols
  * for objects that encode the data and size respectively.
  *
- * The symbol names are a concatenation of "g" before *NAME*; with "Data", as well
- * as "End" and "Size" after. An example is provided below.
+ * The symbol names are a concatenation of `INCBIN_PREFIX' before *NAME*; with
+ * "Data", as well as "End" and "Size" after. An example is provided below.
  *
  * @param NAME The name to associate with this binary data (as an identifier.)
  * @param FILENAME The file to include (as a string literal.)
@@ -157,9 +184,9 @@
  * INCBIN(Icon, "icon.png");
  *
  * // Now you have the following symbols:
- * // const unsigned char gIconData[];
- * // const unsigned char *gIconEnd;
- * // const unsigned int gIconSize;
+ * // const unsigned char <prefix>IconData[];
+ * // const unsigned char *<prefix>IconEnd;
+ * // const unsigned int <prefix>IconSize;
  * @endcode
  *
  * @warning This must be used in global scope
@@ -173,21 +200,22 @@
 #else
 #define INCBIN(NAME, FILENAME) \
     __asm__(INCBIN_SECTION \
-            INCBIN_GLOBAL(g ## NAME ## Data) \
-            INCBIN_TYPE(g ## NAME ## Data) \
+            INCBIN_GLOBAL(INCBIN_PREFIX ## NAME ## Data) \
+            INCBIN_TYPE(INCBIN_PREFIX ## NAME ## Data) \
             INCBIN_ALIGN_HOST \
-            INCBIN_MANGLE "g" #NAME "Data:\n" \
+            INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "Data:\n" \
             INCBIN_MACRO " \"" FILENAME "\"\n" \
-            INCBIN_GLOBAL(g ## NAME ## End) \
-            INCBIN_TYPE(g ## NAME ## End) \
+            INCBIN_GLOBAL(INCBIN_PREFIX ## NAME ## End) \
+            INCBIN_TYPE(INCBIN_PREFIX ## NAME ## End) \
             INCBIN_ALIGN_BYTE \
-            INCBIN_MANGLE "g" #NAME "End:\n" \
-                INCBIN_INT "1\n"\
-            INCBIN_GLOBAL(g ## NAME ## Size) \
-            INCBIN_TYPE(g ## NAME ## Size) \
+            INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "End:\n" \
+                INCBIN_BYTE "1\n" \
+            INCBIN_GLOBAL(INCBIN_PREFIX ## NAME ## Size) \
+            INCBIN_TYPE(INCBIN_PREFIX ## NAME ## Size) \
             INCBIN_ALIGN_HOST \
-            INCBIN_MANGLE "g" #NAME "Size:\n" \
-                INCBIN_INT INCBIN_MANGLE "g" #NAME "End - " INCBIN_MANGLE "g" #NAME "Data\n" \
+            INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "Size:\n" \
+                INCBIN_INT INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "End - " \
+                           INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "Data\n" \
     ); \
     INCBIN_EXTERN(NAME)
 

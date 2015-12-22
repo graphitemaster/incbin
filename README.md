@@ -61,6 +61,20 @@ alignment is as follows
 | Neon | 16        |
 | AVX  | 32        |
 
+## Prefix
+By default, `incbin.h` emits symbols with a `g` prefix. This can be adjusted by
+defining `INCBIN_PREFIX` before including `incbin.h` with a desired prefix. For
+instance
+
+    #define INCBIN_PREFIX g_
+    #include "incbin.h"
+    INCBIN(test, "test.txt");
+
+    // This translation unit now has three symbols
+    // const unsigned char g_testData[];
+    // const unsigned char *g_testEnd;
+    // const unsigned int g_testSize;
+
 ## Explanation
 
 `INCBIN` is a macro which uses the inline assembler provided by almost all
@@ -80,6 +94,9 @@ Just include it into your build and use the `incbin.h` to reference data as
 needed. It's suggested you integrate this tool as part of your projects's
 pre-build events so that this can be automated. A more comprehensive list of
 options for this tool can be viewed by invoking the tool with `-help`
+
+If you're using a custom prefix, be sure to specify the prefix on the command
+line with `-p <prefix>` so that everything matches up.
 
 ## Miscellaneous
 
