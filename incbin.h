@@ -30,15 +30,25 @@
 #define INCBIN_ALIGN_SHIFT_4 16
 #define INCBIN_ALIGN_SHIFT_5 32
 
-/* Common preprocessor utilities */
-#define INCBIN_STR(X) #X
-#define INCBIN_STRINGIZE(X) INCBIN_STR(X)
-
-#define INCBIN_CAT(X, Y) X ## Y
-#define INCBIN_CONCATENATE(X, Y) INCBIN_CAT(X, Y)
-
+/* Actual alignment value */
 #define INCBIN_ALIGNMENT \
-    INCBIN_CONCATENATE(INCBIN_ALIGN_SHIFT_, INCBIN_ALIGNMENT_INDEX)
+    INCBIN_CONCATENATE( \
+        INCBIN_CONCATENATE(INCBIN_ALIGN_SHIFT, _), \
+        INCBIN_ALIGNMENT_INDEX)
+
+/* Stringize */
+#define INCBIN_STR(X) \
+    #X
+#define INCBIN_STRINGIZE(X) \
+    INCBIN_STR(X)
+/* Concatenate */
+#define INCBIN_CAT(X, Y) \
+    X ## Y
+#define INCBIN_CONCATENATE(X, Y) \
+    INCBIN_CAT(X, Y)
+/* Deferred macro expansion */
+#define INCBIN_INVOKE(N, ...) \
+    N(__VA_ARGS__)
 
 /* Green Hills uses a different directive for including binary data */
 #if defined(__ghs__)
@@ -113,6 +123,10 @@
 #  define INCBIN_BYTE            ".byte "
 #endif
 
+/* List of style types used for symbol names */
+#define INCBIN_STYLE_CAMEL 0
+#define INCBIN_STYLE_SNAKE 1
+
 /**
  * @breif Specify the prefix to use for symbol names.
  *
@@ -144,6 +158,81 @@
 #endif
 
 /**
+ * @brief Specify the style used for symbol names.
+ *
+ * Possible options are
+ * - INCBIN_STYLE_CAMEL "CamelCase"
+ * - INCBIN_STYLE_SNAKE "snake_case"
+ *
+ * Default option is *INCBIN_STYLE_CAMEL* producing symbols of the form:
+ * @code
+ * #include "incbin.h"
+ * INCBIN(Foo, "foo.txt");
+ *
+ * // Now you have the following symbols:
+ * // const unsigned char <prefix>FooData[];
+ * // const unsigned char *<prefix>FooEnd;
+ * // const unsigned int <prefix>FooSize;
+ * @endcode
+ *
+ * If however you specify a style before including: e.g:
+ * @code
+ * #define INCBIN_STYLE INCBIN_STYLE_SNAKE
+ * #include "incbin.h"
+ * INCBIN(foo, "foo.txt");
+ *
+ * // Now you have the following symbols:
+ * // const unsigned char <prefix>foo_data[];
+ * // const unsigned char *<prefix>foo_end;
+ * // const unsigned int <prefix>foo_size;
+ * @endcode
+ */
+#if !defined(INCBIN_STYLE)
+#  define INCBIN_STYLE INCBIN_STYLE_CAMEL
+#endif
+
+/* Style lookup tables */
+#define INCBIN_STYLE_0_DATA Data
+#define INCBIN_STYLE_0_END End
+#define INCBIN_STYLE_0_SIZE Size
+#define INCBIN_STYLE_1_DATA _data
+#define INCBIN_STYLE_1_END _end
+#define INCBIN_STYLE_1_SIZE _size
+
+/* Style lookup: returning identifier */
+#define INCBIN_STYLE_IDENT(TYPE) \
+    INCBIN_CONCATENATE( \
+        INCBIN_CONCATENATE( \
+            INCBIN_CONCATENATE(INCBIN_STYLE, _), \
+            INCBIN_STYLE), \
+        INCBIN_CONCATENATE(_, TYPE))
+
+/* Style lookup: returning string literal */
+#define INCBIN_STYLE_STRING(TYPE) \
+    INCBIN_STRINGIZE( \
+        INCBIN_INVOKE( \
+            INCBIN_STYLE_IDENT, \
+            TYPE))
+
+/* Generate the global labels by indirectly invoking the macro with our style
+ * type and concatenating the name against them. */
+#define INCBIN_GLOBAL_LABELS(NAME, TYPE) \
+    INCBIN_INVOKE( \
+        INCBIN_GLOBAL, \
+        INCBIN_CONCATENATE( \
+            NAME, \
+            INCBIN_INVOKE( \
+                INCBIN_STYLE_IDENT, \
+                TYPE))) \
+    INCBIN_INVOKE( \
+        INCBIN_TYPE, \
+        INCBIN_CONCATENATE( \
+            NAME, \
+            INCBIN_INVOKE( \
+                INCBIN_STYLE_IDENT, \
+                TYPE)))
+
+/**
  * @brief Externally reference binary data included in another translation unit.
  *
  * Produces three external symbols that reference the binary data included in
@@ -164,9 +253,18 @@
  * @endcode
  */
 #define INCBIN_EXTERN(NAME) \
-    INCBIN_EXTERNAL const INCBIN_ALIGN unsigned char INCBIN_CONCATENATE(INCBIN_PREFIX, NAME ## Data)[]; \
-    INCBIN_EXTERNAL const INCBIN_ALIGN unsigned char *INCBIN_CONCATENATE(INCBIN_PREFIX, NAME ## End); \
-    INCBIN_EXTERNAL const unsigned int INCBIN_CONCATENATE(INCBIN_PREFIX, NAME ## Size)
+    INCBIN_EXTERNAL const INCBIN_ALIGN unsigned char \
+        INCBIN_CONCATENATE( \
+            INCBIN_CONCATENATE(INCBIN_PREFIX, NAME), \
+            INCBIN_STYLE_IDENT(DATA))[]; \
+    INCBIN_EXTERNAL const INCBIN_ALIGN unsigned char * \
+    INCBIN_CONCATENATE( \
+        INCBIN_CONCATENATE(INCBIN_PREFIX, NAME), \
+        INCBIN_STYLE_IDENT(END)); \
+    INCBIN_EXTERNAL const unsigned int \
+        INCBIN_CONCATENATE( \
+            INCBIN_CONCATENATE(INCBIN_PREFIX, NAME), \
+            INCBIN_STYLE_IDENT(SIZE))
 
 /**
  * @brief Include a binary file into the current translation unit.
@@ -190,6 +288,7 @@
  * @endcode
  *
  * @warning This must be used in global scope
+ * @warning The identifiers may be different if INCBIN_STYLE is not default
  *
  * To externally reference the data included by this in another translation unit
  * please @see INCBIN_EXTERN.
@@ -200,22 +299,19 @@
 #else
 #define INCBIN(NAME, FILENAME) \
     __asm__(INCBIN_SECTION \
-            INCBIN_GLOBAL(NAME ## Data) \
-            INCBIN_TYPE(NAME ## Data) \
+            INCBIN_GLOBAL_LABELS(NAME, DATA) \
             INCBIN_ALIGN_HOST \
-            INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "Data:\n" \
+            INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(DATA) ":\n" \
             INCBIN_MACRO " \"" FILENAME "\"\n" \
-            INCBIN_GLOBAL(NAME ## End) \
-            INCBIN_TYPE(NAME ## End) \
+            INCBIN_GLOBAL_LABELS(NAME, END) \
             INCBIN_ALIGN_BYTE \
-            INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "End:\n" \
+            INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(END) ":\n" \
                 INCBIN_BYTE "1\n" \
-            INCBIN_GLOBAL(NAME ## Size) \
-            INCBIN_TYPE(NAME ## Size) \
+            INCBIN_GLOBAL_LABELS(NAME, SIZE) \
             INCBIN_ALIGN_HOST \
-            INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "Size:\n" \
-                INCBIN_INT INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "End - " \
-                           INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "Data\n" \
+            INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(SIZE) ":\n" \
+                INCBIN_INT INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(END) " - " \
+                           INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(DATA) "\n" \
     ); \
     INCBIN_EXTERN(NAME)
 
