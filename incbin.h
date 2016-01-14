@@ -47,8 +47,10 @@
 #define INCBIN_CONCATENATE(X, Y) \
     INCBIN_CAT(X, Y)
 /* Deferred macro expansion */
+#define INCBIN_EVAL(X) \
+    X
 #define INCBIN_INVOKE(N, ...) \
-    N(__VA_ARGS__)
+    INCBIN_EVAL(N(__VA_ARGS__))
 
 /* Green Hills uses a different directive for including binary data */
 #if defined(__ghs__)
@@ -202,17 +204,15 @@
 /* Style lookup: returning identifier */
 #define INCBIN_STYLE_IDENT(TYPE) \
     INCBIN_CONCATENATE( \
+        INCBIN_STYLE_, \
         INCBIN_CONCATENATE( \
-            INCBIN_CONCATENATE(INCBIN_STYLE, _), \
-            INCBIN_STYLE), \
-        INCBIN_CONCATENATE(_, TYPE))
+            INCBIN_EVAL(INCBIN_STYLE), \
+            INCBIN_CONCATENATE(_, TYPE)))
 
 /* Style lookup: returning string literal */
 #define INCBIN_STYLE_STRING(TYPE) \
     INCBIN_STRINGIZE( \
-        INCBIN_INVOKE( \
-            INCBIN_STYLE_IDENT, \
-            TYPE))
+        INCBIN_STYLE_IDENT(TYPE)) \
 
 /* Generate the global labels by indirectly invoking the macro with our style
  * type and concatenating the name against them. */
