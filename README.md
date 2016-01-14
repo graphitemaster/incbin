@@ -130,7 +130,9 @@ pre-build events so that this can be automated. A more comprehensive list of
 options for this tool can be viewed by invoking the tool with `-help`
 
 If you're using a custom prefix, be sure to specify the prefix on the command
-line with `-p <prefix>` so that everything matches up.
+line with `-p <prefix>` so that everything matches up; similarly, if you're
+using a custom style, be sure to specify the style on the command line with
+`-S <style>` as well.
 
 ## Miscellaneous
 
