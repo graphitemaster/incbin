@@ -135,7 +135,8 @@ usage:
         if (!strcmp(argv[i], "-o")) {
             if (i + 1 < argc) {
                 strcpy(outfile, argv[i + 1]);
-                memmove(argv+i+1, argv+i+2, (argc-i-3) * sizeof *argv);
+                memmove(argv+i+1, argv+i+2, (argc-i-2) * sizeof *argv);
+                argc--;
                 continue;
             }
         } else if (!strcmp(argv[i], "-p")) {
@@ -146,12 +147,15 @@ usage:
             if (argv[i+1][0] == '-') {
                 prefix[0] = '\0';
                 /* is it just a -? */
-                if (i + 1 < argc && !strcmp(argv[i+1], "-"))
-                    memmove(argv+i+1, argv+i+2, (argc-i-3) * sizeof *argv);
+                if (i + 1 < argc && !strcmp(argv[i+1], "-")) {
+                    memmove(argv+i+1, argv+i+2, (argc-i-2) * sizeof *argv);
+                    argc--;
+                }
                 continue;
             }
             strcpy(prefix, argv[i + 1]);
-            memmove(argv+i+1, argv+i+2, (argc-i-3) * sizeof *argv);
+            memmove(argv+i+1, argv+i+2, (argc-i-2) * sizeof *argv);
+            argc--;
             continue;
         } else if (!strncmp(argv[i], "-I", 2)) {
             char *name = argv[i] + 2; /* skip "-I"; */
