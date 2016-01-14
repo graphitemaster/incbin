@@ -40,6 +40,7 @@ Known to work on the following compilers
 * Stratus VOS C
 * TinyCC
 * cparser & libfirm
+* LCC
 * MSVC _See MSVC below_
 
 If your compiler is not listed, as long as it supports GCC inline assembler, this
@@ -74,6 +75,38 @@ instance
     // const unsigned char g_testData[];
     // const unsigned char *g_testEnd;
     // const unsigned int g_testSize;
+
+You can also choose to have no prefix by defining the prefix with nothing, e.g:
+    #define INCBIN_PREFIX
+    #include "incbin.h"
+    INCBIN(test, "test.txt");
+
+    // This translation unit now has three symbols
+    // const unsigned char testData[];
+    // const unsigned char *testEnd;
+    // const unsigned int testSize;
+
+## Style
+By default, `incbin.h` emits symbols with `CamelCase` style. This can be adjusted
+by defining `INCBIN_STYLE` before including `incbin.h` to change the style. There
+are two possible styles to choose from
+
+* INCBIN_STYLE_CAMEL (CamelCase)
+* INCBIN_STYLE_SNAKE (snake_case)
+
+For instance:
+
+    #define INCBIN_STYLE INCBIN_STYLE_SNAKE
+    #include "incbin.h"
+    INCBIN(test, "test.txt");
+
+    // This translation unit now has three symbols
+    // const unsigned char gtest_data[];
+    // const unsigned char *gtest_end;
+    // const unsigned int gtest_size;
+
+Combining both the style and prefix allows for you to adjust `incbin.h` to suite
+your existing style and practices.
 
 ## Explanation
 
