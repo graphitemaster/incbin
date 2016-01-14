@@ -76,7 +76,8 @@ instance
     // const unsigned char *g_testEnd;
     // const unsigned int g_testSize;
 
-You can also choose to have no prefix by defining the prefix with nothing, e.g:
+You can also choose to have no prefix by defining the prefix with nothing, e.g
+
     #define INCBIN_PREFIX
     #include "incbin.h"
     INCBIN(test, "test.txt");
