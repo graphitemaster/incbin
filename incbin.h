@@ -130,7 +130,7 @@
 #define INCBIN_STYLE_SNAKE 1
 
 /**
- * @breif Specify the prefix to use for symbol names.
+ * @brief Specify the prefix to use for symbol names.
  *
  * By default this is `g', producing symbols of the form:
  * @code
