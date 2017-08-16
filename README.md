@@ -10,7 +10,7 @@ Include binary files in your C/C++ applications with ease
 
     // This translation unit now has three symbols
     // const unsigned char gIconData[];
-    // const unsigned char *gIconEnd;
+    // const unsigned char gIconEnd; // a marker to the end, take the address to get the ending pointer
     // const unsigned int gIconSize;
 
     // Reference in other translation units like this
