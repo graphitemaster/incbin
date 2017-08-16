@@ -18,7 +18,7 @@ Include binary files in your C/C++ applications with ease
 
     // This translation unit now has three extern symbols
     // extern const unsigned char gIconData[];
-    // extern const unsigned char *gIconEnd;
+    // extern const unsigned char gIconEnd; // a marker to the end, take the address to get the ending pointer
     // extern const unsigned int gIconSize;
 
 ## Portability
@@ -84,7 +84,7 @@ You can also choose to have no prefix by defining the prefix with nothing, e.g
 
     // This translation unit now has three symbols
     // const unsigned char testData[];
-    // const unsigned char *testEnd;
+    // const unsigned char testEnd;
     // const unsigned int testSize;
 
 ## Style
@@ -103,7 +103,7 @@ For instance:
 
     // This translation unit now has three symbols
     // const unsigned char gtest_data[];
-    // const unsigned char *gtest_end;
+    // const unsigned char gtest_end;
     // const unsigned int gtest_size;
 
 Combining both the style and prefix allows for you to adjust `incbin.h` to suite
