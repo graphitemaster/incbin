@@ -98,16 +98,38 @@
 #  define INCBIN_CONST    const
 #endif
 
+/**
+ * @brief Optionally override the linker section into which data is emitted.
+ *
+ * @warning If you use this facility, you'll have to deal with platform-specific linker output
+ * section naming on your own
+ *
+ * Overriding the default linker output section, e.g for esp8266/Arduino:
+ * @code
+ * #define INCBIN_OUTPUT_SECTION ".irom.text"
+ * #include "incbin.h"
+ * INCBIN(Foo, "foo.txt");
+ * // Data is emitted into program memory that never gets copied to RAM
+ * @endcode
+ */
+#if !defined(INCBIN_OUTPUT_SECTION)
+#  if defined(__APPLE__)
+#    define INCBIN_OUTPUT_SECTION         ".const_data"
+#  else
+#    define INCBIN_OUTPUT_SECTION         ".rodata"
+#  endif
+#endif
+
 #if defined(__APPLE__)
 /* The directives are different for Apple branded compilers */
-#  define INCBIN_SECTION         ".const_data\n"
+#  define INCBIN_SECTION         INCBIN_OUTPUT_SECTION "\n"
 #  define INCBIN_GLOBAL(NAME)    ".globl " INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "\n"
 #  define INCBIN_INT             ".long "
 #  define INCBIN_MANGLE          "_"
 #  define INCBIN_BYTE            ".byte "
 #  define INCBIN_TYPE(...)
 #else
-#  define INCBIN_SECTION         ".section .rodata\n"
+#  define INCBIN_SECTION         ".section " INCBIN_OUTPUT_SECTION "\n"
 #  define INCBIN_GLOBAL(NAME)    ".global " INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "\n"
 #  define INCBIN_INT             ".int "
 #  if defined(__USER_LABEL_PREFIX__)
