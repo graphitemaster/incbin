@@ -164,7 +164,7 @@
  *
  * // Now you have the following symbols:
  * // const unsigned char gFooData[];
- * // const unsigned char gFooEnd;
+ * // const unsigned char *const gFooEnd;
  * // const unsigned int gFooSize;
  * @endcode
  *
@@ -176,7 +176,7 @@
  *
  * // Now you have the following symbols instead:
  * // const unsigned char incbinFooData[];
- * // const unsigned char incbinFooEnd;
+ * // const unsigned char *const incbinFooEnd;
  * // const unsigned int incbinFooSize;
  * @endcode
  */
@@ -198,7 +198,7 @@
  *
  * // Now you have the following symbols:
  * // const unsigned char <prefix>FooData[];
- * // const unsigned char <prefix>FooEnd;
+ * // const unsigned char *const <prefix>FooEnd;
  * // const unsigned int <prefix>FooSize;
  * @endcode
  *
@@ -210,7 +210,7 @@
  *
  * // Now you have the following symbols:
  * // const unsigned char <prefix>foo_data[];
- * // const unsigned char <prefix>foo_end;
+ * // const unsigned char *const <prefix>foo_end;
  * // const unsigned int <prefix>foo_size;
  * @endcode
  */
@@ -273,7 +273,7 @@
  *
  * // Now you have the following symbols:
  * // extern const unsigned char <prefix>FooData[];
- * // extern const unsigned char <prefix>FooEnd;
+ * // extern const unsigned char *const <prefix>FooEnd;
  * // extern const unsigned int <prefix>FooSize;
  * @endcode
  */
@@ -282,7 +282,7 @@
         INCBIN_CONCATENATE( \
             INCBIN_CONCATENATE(INCBIN_PREFIX, NAME), \
             INCBIN_STYLE_IDENT(DATA))[]; \
-    INCBIN_EXTERNAL const INCBIN_ALIGN unsigned char * \
+    INCBIN_EXTERNAL const INCBIN_ALIGN unsigned char *const \
     INCBIN_CONCATENATE( \
         INCBIN_CONCATENATE(INCBIN_PREFIX, NAME), \
         INCBIN_STYLE_IDENT(END)); \
@@ -308,7 +308,7 @@
  *
  * // Now you have the following symbols:
  * // const unsigned char <prefix>IconData[];
- * // const unsigned char <prefix>IconEnd;
+ * // const unsigned char *const <prefix>IconEnd;
  * // const unsigned int <prefix>IconSize;
  * @endcode
  *
