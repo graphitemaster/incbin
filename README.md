@@ -4,6 +4,7 @@ Include binary files in your C/C++ applications with ease
 
 ## Example
 
+``` c
     #include "incbin.h"
 
     INCBIN(Icon, "icon.png");
@@ -21,6 +22,7 @@ Include binary files in your C/C++ applications with ease
     // extern const unsigned char gIconData[];
     // extern const unsigned char *gIconEnd; // a marker to the end, take the address to get the ending pointer
     // extern const unsigned int gIconSize;
+```
 
 ## Portability
 
@@ -68,6 +70,7 @@ By default, `incbin.h` emits symbols with a `g` prefix. This can be adjusted by
 defining `INCBIN_PREFIX` before including `incbin.h` with a desired prefix. For
 instance
 
+``` c
     #define INCBIN_PREFIX g_
     #include "incbin.h"
     INCBIN(test, "test.txt");
@@ -76,9 +79,11 @@ instance
     // const unsigned char g_testData[];
     // const unsigned char *g_testEnd;
     // const unsigned int g_testSize;
+```
 
-You can also choose to have no prefix by defining the prefix with nothing, e.g
+You can also choose to have no prefix by defining the prefix with nothing, for example:
 
+``` c
     #define INCBIN_PREFIX
     #include "incbin.h"
     INCBIN(test, "test.txt");
@@ -87,6 +92,7 @@ You can also choose to have no prefix by defining the prefix with nothing, e.g
     // const unsigned char testData[];
     // const unsigned char *testEnd;
     // const unsigned int testSize;
+```
 
 ## Style
 By default, `incbin.h` emits symbols with `CamelCase` style. This can be adjusted
@@ -98,6 +104,7 @@ are two possible styles to choose from
 
 For instance:
 
+``` c
     #define INCBIN_STYLE INCBIN_STYLE_SNAKE
     #include "incbin.h"
     INCBIN(test, "test.txt");
@@ -106,9 +113,25 @@ For instance:
     // const unsigned char gtest_data[];
     // const unsigned char *gtest_end;
     // const unsigned int gtest_size;
+```
 
 Combining both the style and prefix allows for you to adjust `incbin.h` to suite
 your existing style and practices.
+
+## Overriding Linker Output section
+By default, `incbin.h` emits into the read-only linker output section used on
+the detected platform. If you need to override this for whatever reason, you
+can manually specify the linker output section.
+
+For example, to emit data into program memory for
+[esp8266/Arduino](github.com/esp8266/Arduino):
+
+``` c
+#define INCBIN_OUTPUT_SECTION ".irom.text"
+#include "incbin.h"
+INCBIN(Foo, "foo.txt");
+// Data is emitted into program memory that never gets copied to RAM
+```
 
 ## Explanation
 
