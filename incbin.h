@@ -9,17 +9,29 @@
 #ifndef INCBIN_HDR
 #define INCBIN_HDR
 #include <limits.h>
-
-#if defined(__SSE__) || defined(__neon__)
-# define INCBIN_ALIGNMENT_INDEX 4
-#elif defined(__AVX__)
+#if   defined(__AVX512BW__) || \
+      defined(__AVX512CD__) || \
+      defined(__AVX512DQ__) || \
+      defined(__AVX512ER__) || \
+      defined(__AVX512PF__) || \
+      defined(__AVX512VL__) || \
+      defined(__AVX512F__)
+# define INCBIN_ALIGNMENT_INDEX 6
+#elif defined(__AVX__)      || \
+      defined(__AVX2__)
 # define INCBIN_ALIGNMENT_INDEX 5
-#else
-# if ULONG_MAX == 0xffffffffu
-#  define INCBIN_ALIGNMENT_INDEX 2
+#elif defined(__SSE__)      || \
+      defined(__SSE2__)     || \
+      defined(__SSE3__)     || \
+      defined(__SSSE3__)    || \
+      defined(__SSE4_1__)   || \
+      defined(__SSE4_2__)   || \
+      defined(__neon__)
+# define INCBIN_ALIGNMENT_INDEX 4
+#elif ULONG_MAX != 0xffffffffu
+# define INCBIN_ALIGNMENT_INDEX 3
 # else
-#  define INCBIN_ALIGNMENT_INDEX 3
-# endif
+# define INCBIN_ALIGNMENT_INDEX 2
 #endif
 
 /* Lookup table of (1 << n) where `n' is `INCBIN_ALIGNMENT_INDEX' */
@@ -29,6 +41,7 @@
 #define INCBIN_ALIGN_SHIFT_3 8
 #define INCBIN_ALIGN_SHIFT_4 16
 #define INCBIN_ALIGN_SHIFT_5 32
+#define INCBIN_ALIGN_SHIFT_6 64
 
 /* Actual alignment value */
 #define INCBIN_ALIGNMENT \

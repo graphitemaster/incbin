@@ -50,20 +50,23 @@ If your compiler is not listed, as long as it supports GCC inline assembler, thi
 should work.
 
 ## MISRA
-INCBIN can be used in MISRA C setting.
+INCBIN can be used in MISRA C setting. However it should be independently checked
+due to its use of inline assembly to achieve what it does. Independent verification
+of the header has been done several times based on commit: 7e327a28ba5467c4202ec37874beca7084e4b08c
 
 ## Alignment
 
 The data included by this tool will be aligned on the architectures word boundary
-unless `__SSE__`, `__AVX__` or `__neon__` is defined, then it's aligned on a byte
-boundary that respects SIMD convention. The table of the alignments for SIMD
-alignment is as follows
+unless some variant of SIMD is detected, then it's aligned on a byte boundary that
+respects SIMD convention just incase your binary data may be used in vectorized
+code. The table of the alignments for SIMD this header recognizes is as follows:
 
-| SIMD | Alignment |
-|------|-----------|
-| SSE  | 16        |
-| Neon | 16        |
-| AVX  | 32        |
+| SIMD                                    | Alignment |
+|-----------------------------------------|-----------|
+| SSE, SSE2, SSE3, SSSE3, SSE4.1, SSE4.2  | 16        |
+| Neon                                    | 16        |
+| AVX, AVX2                               | 32        |
+| AVX512                                  | 64        |
 
 ## Prefix
 By default, `incbin.h` emits symbols with a `g` prefix. This can be adjusted by
@@ -77,7 +80,7 @@ instance
 
     // This translation unit now has three symbols
     // const unsigned char g_testData[];
-    // const unsigned char *g_testEnd;
+    // const unsigned char *const g_testEnd;
     // const unsigned int g_testSize;
 ```
 
