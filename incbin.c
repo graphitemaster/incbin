@@ -236,7 +236,7 @@ usage:
                 goto end;
             } else {
                 long size, i;
-                unsigned char *data, count;
+                unsigned char *data, count = 0;
                 fseek(f, 0, SEEK_END);
                 size = ftell(f);
                 fseek(f, 0, SEEK_SET);
