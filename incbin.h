@@ -67,7 +67,12 @@
 
 /* Green Hills uses a different directive for including binary data */
 #if defined(__ghs__)
-#  define INCBIN_MACRO "\tINCBIN"
+#  if (__ghs_asm == 2)
+#    define INCBIN_MACRO ".file"
+/* Or consider the ".myrawdata" entry in the ld file */
+#  else
+#    define INCBIN_MACRO "\tINCBIN"
+#  endif
 #else
 #  define INCBIN_MACRO ".incbin"
 #endif
@@ -94,11 +99,11 @@
  * On arm assemblers, the alignment value is calculated as (1 << n) where `n' is
  * the shift count. This is the value passed to `.align'
  */
-#  define INCBIN_ALIGN_HOST ".align" INCBIN_STRINGIZE(INCBIN_ALIGNMENT_INDEX) "\n"
+#  define INCBIN_ALIGN_HOST ".align " INCBIN_STRINGIZE(INCBIN_ALIGNMENT_INDEX) "\n"
 #  define INCBIN_ALIGN_BYTE ".align 0\n"
 #else
 /* We assume other inline assembler's treat `.align' as `.balign' */
-#  define INCBIN_ALIGN_HOST ".align" INCBIN_STRINGIZE(INCBIN_ALIGNMENT) "\n"
+#  define INCBIN_ALIGN_HOST ".align " INCBIN_STRINGIZE(INCBIN_ALIGNMENT) "\n"
 #  define INCBIN_ALIGN_BYTE ".align 1\n"
 #endif
 
@@ -144,7 +149,11 @@
 #else
 #  define INCBIN_SECTION         ".section " INCBIN_OUTPUT_SECTION "\n"
 #  define INCBIN_GLOBAL(NAME)    ".global " INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "\n"
-#  define INCBIN_INT             ".int "
+#  if defined(__ghs__)
+#    define INCBIN_INT           ".word "
+#  else
+#    define INCBIN_INT           ".int "
+#  endif
 #  if defined(__USER_LABEL_PREFIX__)
 #    define INCBIN_MANGLE        INCBIN_STRINGIZE(__USER_LABEL_PREFIX__)
 #  else
