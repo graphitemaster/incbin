@@ -9,7 +9,7 @@
 #include <limits.h>
 
 #ifndef PATH_MAX
-#  define PATH_MAX MAX_PATH
+#  define PATH_MAX 260
 #endif
 
 #define SEARCH_PATHS_MAX 64
