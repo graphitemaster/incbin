@@ -265,8 +265,8 @@ usage:
                 fclose(f);
             }
             fprintf(out, "\n};\n");
-            fprintf(out, "INCBIN_CONST INCBIN_ALIGN unsigned char *const %s%s%s = g%s%s + sizeof(g%s%s);\n", prefix, name, s(kEnd), name, s(kData), name, s(kData));
-            fprintf(out, "INCBIN_CONST unsigned int %s%s%s = sizeof(g%s%s);\n", prefix, name, s(kSize), name, s(kData));
+            fprintf(out, "INCBIN_CONST INCBIN_ALIGN unsigned char *const %s%s%s = %s%s%s + sizeof(%s%s%s);\n", prefix, name, s(kEnd), prefix, name, s(kData), prefix, name, s(kData));
+            fprintf(out, "INCBIN_CONST unsigned int %s%s%s = sizeof(%s%s%s);\n", prefix, name, s(kSize), prefix, name, s(kData));
         }
 end:
         free(line);
