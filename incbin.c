@@ -100,10 +100,11 @@ static const char *styled(int style, int ident) {
         }
         break;
     }
+    return "";
 }
 
 int main(int argc, char **argv) {
-    int ret, i, paths, files = 0, style = kCamel;
+    int ret = 0, i, paths, files = 0, style = kCamel;
     char outfile[FILENAME_MAX] = "data.c";
     char search_paths[SEARCH_PATHS_MAX][PATH_MAX];
     char prefix[FILENAME_MAX] = "g";
@@ -233,6 +234,7 @@ usage:
             file++;
             if (!(f = open_file(file, "rb", search_paths, paths))) {
                 fprintf(stderr, "failed to include data `%s'\n", file);
+                ret = 1;
                 goto end;
             } else {
                 long size, i;
