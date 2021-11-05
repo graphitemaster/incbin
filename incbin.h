@@ -325,6 +325,16 @@
             INCBIN_STYLE_IDENT(SIZE))
 
 /**
+ * @brief If defined, one null-byte (value 0) is appended to the data
+ */
+#ifdef INCBIN_APPEND_TERMINATING_NULL
+#   define INCBIN_APPEND_AFTER_DATA \
+        INCBIN_BYTE "0\n"
+#else
+#   define INCBIN_APPEND_AFTER_DATA
+#endif
+
+/**
  * @brief Include a binary file into the current translation unit.
  *
  * Includes a binary file into the current translation unit, producing three symbols
@@ -364,6 +374,7 @@
             INCBIN_GLOBAL_LABELS(NAME, END) \
             INCBIN_ALIGN_BYTE \
             INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(END) ":\n" \
+            INCBIN_APPEND_AFTER_DATA \
                 INCBIN_BYTE "1\n" \
             INCBIN_SIZE_SECTION \
             INCBIN_GLOBAL_LABELS(NAME, SIZE) \
