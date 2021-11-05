@@ -138,9 +138,19 @@
 #  endif
 #endif
 
+/**
+ * @brief Optionally override the linker section into which data size is emitted.
+ * Deaults to INCBIN_OUTPUT_SECTION
+ */
+#if !defined(INCBIN_SIZE_OUTPUT_SECTION)
+#   define INCBIN_SIZE_OUTPUT_SECTION     INCBIN_OUTPUT_SECTION
+#endif
+
+
 #if defined(__APPLE__)
 /* The directives are different for Apple branded compilers */
 #  define INCBIN_SECTION         INCBIN_OUTPUT_SECTION "\n"
+#  define INCBIN_SIZE_SECTION    INCBIN_SIZE_OUTPUT_SECTION "\n"
 #  define INCBIN_GLOBAL(NAME)    ".globl " INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "\n"
 #  define INCBIN_INT             ".long "
 #  define INCBIN_MANGLE          "_"
@@ -148,6 +158,7 @@
 #  define INCBIN_TYPE(...)
 #else
 #  define INCBIN_SECTION         ".section " INCBIN_OUTPUT_SECTION "\n"
+#  define INCBIN_SIZE_SECTION    ".section " INCBIN_SIZE_OUTPUT_SECTION "\n"
 #  define INCBIN_GLOBAL(NAME)    ".global " INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "\n"
 #  if defined(__ghs__)
 #    define INCBIN_INT           ".word "
@@ -354,6 +365,7 @@
             INCBIN_ALIGN_BYTE \
             INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(END) ":\n" \
                 INCBIN_BYTE "1\n" \
+            INCBIN_SIZE_SECTION \
             INCBIN_GLOBAL_LABELS(NAME, SIZE) \
             INCBIN_ALIGN_HOST \
             INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(SIZE) ":\n" \
