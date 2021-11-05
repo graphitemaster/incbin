@@ -291,6 +291,33 @@
                 TYPE)))
 
 /**
+ * @brief If defined, one null-byte (value 0) is appended to the data
+ */
+#ifdef INCBIN_APPEND_TERMINATING_NULL
+#   define INCBIN_APPEND_AFTER_DATA \
+        INCBIN_BYTE "0\n"
+#else
+#   define INCBIN_APPEND_AFTER_DATA
+#endif
+
+/**
+ * @brief Same as INCBIN_EXTERN, but allows to specify data pointer type.
+ */
+#define INCBIN_EXTERN_PTR_TYPE(NAME, DATA_PTR_TYPE) \
+    INCBIN_EXTERNAL const INCBIN_ALIGN DATA_PTR_TYPE \
+        INCBIN_CONCATENATE( \
+            INCBIN_CONCATENATE(INCBIN_PREFIX, NAME), \
+            INCBIN_STYLE_IDENT(DATA))[]; \
+    INCBIN_EXTERNAL const INCBIN_ALIGN DATA_PTR_TYPE *const \
+    INCBIN_CONCATENATE( \
+        INCBIN_CONCATENATE(INCBIN_PREFIX, NAME), \
+        INCBIN_STYLE_IDENT(END)); \
+    INCBIN_EXTERNAL const unsigned int \
+        INCBIN_CONCATENATE( \
+            INCBIN_CONCATENATE(INCBIN_PREFIX, NAME), \
+            INCBIN_STYLE_IDENT(SIZE))
+
+/**
  * @brief Externally reference binary data included in another translation unit.
  *
  * Produces three external symbols that reference the binary data included in
@@ -311,27 +338,36 @@
  * @endcode
  */
 #define INCBIN_EXTERN(NAME) \
-    INCBIN_EXTERNAL const INCBIN_ALIGN unsigned char \
-        INCBIN_CONCATENATE( \
-            INCBIN_CONCATENATE(INCBIN_PREFIX, NAME), \
-            INCBIN_STYLE_IDENT(DATA))[]; \
-    INCBIN_EXTERNAL const INCBIN_ALIGN unsigned char *const \
-    INCBIN_CONCATENATE( \
-        INCBIN_CONCATENATE(INCBIN_PREFIX, NAME), \
-        INCBIN_STYLE_IDENT(END)); \
-    INCBIN_EXTERNAL const unsigned int \
-        INCBIN_CONCATENATE( \
-            INCBIN_CONCATENATE(INCBIN_PREFIX, NAME), \
-            INCBIN_STYLE_IDENT(SIZE))
+    INCBIN_EXTERN_PTR_TYPE(NAME, unsigned char)
 
 /**
- * @brief If defined, one null-byte (value 0) is appended to the data
+ * @brief Same as INCBIN, but allows to specify data pointer type.
  */
-#ifdef INCBIN_APPEND_TERMINATING_NULL
-#   define INCBIN_APPEND_AFTER_DATA \
-        INCBIN_BYTE "0\n"
+#ifdef _MSC_VER
+#define INCBIN_PTR_TYPE(NAME, FILENAME, DATA_PTR_TYPE) \
+    INCBIN_EXTERN_PTR_TYPE(NAME, DATA_PTR_TYPE)
 #else
-#   define INCBIN_APPEND_AFTER_DATA
+#define INCBIN_PTR_TYPE(NAME, FILENAME, DATA_PTR_TYPE) \
+    __asm__(INCBIN_SECTION \
+            INCBIN_GLOBAL_LABELS(NAME, DATA) \
+            INCBIN_ALIGN_HOST \
+            INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(DATA) ":\n" \
+            INCBIN_MACRO " \"" FILENAME "\"\n" \
+            INCBIN_GLOBAL_LABELS(NAME, END) \
+            INCBIN_ALIGN_BYTE \
+            INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(END) ":\n" \
+            INCBIN_APPEND_AFTER_DATA \
+                INCBIN_BYTE "1\n" \
+            INCBIN_SIZE_SECTION \
+            INCBIN_GLOBAL_LABELS(NAME, SIZE) \
+            INCBIN_ALIGN_HOST \
+            INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(SIZE) ":\n" \
+                INCBIN_INT INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(END) " - " \
+                           INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(DATA) "\n" \
+            INCBIN_ALIGN_HOST \
+            ".text\n" \
+    ); \
+    INCBIN_EXTERN_PTR_TYPE(NAME, DATA_PTR_TYPE)
 #endif
 
 /**
@@ -361,31 +397,7 @@
  * To externally reference the data included by this in another translation unit
  * please @see INCBIN_EXTERN.
  */
-#ifdef _MSC_VER
 #define INCBIN(NAME, FILENAME) \
-    INCBIN_EXTERN(NAME)
-#else
-#define INCBIN(NAME, FILENAME) \
-    __asm__(INCBIN_SECTION \
-            INCBIN_GLOBAL_LABELS(NAME, DATA) \
-            INCBIN_ALIGN_HOST \
-            INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(DATA) ":\n" \
-            INCBIN_MACRO " \"" FILENAME "\"\n" \
-            INCBIN_GLOBAL_LABELS(NAME, END) \
-            INCBIN_ALIGN_BYTE \
-            INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(END) ":\n" \
-            INCBIN_APPEND_AFTER_DATA \
-                INCBIN_BYTE "1\n" \
-            INCBIN_SIZE_SECTION \
-            INCBIN_GLOBAL_LABELS(NAME, SIZE) \
-            INCBIN_ALIGN_HOST \
-            INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(SIZE) ":\n" \
-                INCBIN_INT INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(END) " - " \
-                           INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(DATA) "\n" \
-            INCBIN_ALIGN_HOST \
-            ".text\n" \
-    ); \
-    INCBIN_EXTERN(NAME)
+    INCBIN_PTR_TYPE(NAME, FILENAME, unsigned char)
 
-#endif
 #endif
