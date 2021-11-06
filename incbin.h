@@ -199,27 +199,17 @@
 /**
  * @brief Specify the prefix to use for symbol names.
  *
- * By default this is `g', producing symbols of the form:
- * @code
- * #include "incbin.h"
- * INCBIN(Foo, "foo.txt");
+ * @note By default this is "g".
  *
- * // Now you have the following symbols:
- * // const unsigned char gFooData[];
- * // const unsigned char *const gFooEnd;
- * // const unsigned int gFooSize;
- * @endcode
- *
- * If however you specify a prefix before including: e.g:
  * @code
  * #define INCBIN_PREFIX incbin
  * #include "incbin.h"
  * INCBIN(Foo, "foo.txt");
  *
  * // Now you have the following symbols instead:
- * // const unsigned char incbinFooData[];
- * // const unsigned char *const incbinFooEnd;
- * // const unsigned int incbinFooSize;
+ * // const unsigned char incbinFoo<data>[];
+ * // const unsigned char *const incbinFoo<end>;
+ * // const unsigned int incbinFoo<size>;
  * @endcode
  */
 #if !defined(INCBIN_PREFIX)
@@ -233,18 +223,8 @@
  * - INCBIN_STYLE_CAMEL "CamelCase"
  * - INCBIN_STYLE_SNAKE "snake_case"
  *
- * Default option is *INCBIN_STYLE_CAMEL* producing symbols of the form:
- * @code
- * #include "incbin.h"
- * INCBIN(Foo, "foo.txt");
+ * @note By default this is INCBIN_STYLE_CAMEL
  *
- * // Now you have the following symbols:
- * // const unsigned char <prefix>FooData[];
- * // const unsigned char *const <prefix>FooEnd;
- * // const unsigned int <prefix>FooSize;
- * @endcode
- *
- * If however you specify a style before including: e.g:
  * @code
  * #define INCBIN_STYLE INCBIN_STYLE_SNAKE
  * #include "incbin.h"
@@ -315,19 +295,19 @@
  * INCBIN_EXTERN(Foo);
  *
  * // Now you have the following symbols:
- * // extern const unsigned char <prefix>FooData[];
- * // extern const unsigned char *const <prefix>FooEnd;
- * // extern const unsigned int <prefix>FooSize;
+ * // extern const unsigned char <prefix>Foo<data>[];
+ * // extern const unsigned char *const <prefix>Foo<end>;
+ * // extern const unsigned int <prefix>Foo<size>;
  * @endcode
  * 
  * You may specify a custom optional data type as well as the first argument.
  * @code
- * INCBIN_EXTERN(custom_type, Bar);
+ * INCBIN_EXTERN(custom_type, Foo);
  * 
  * // Now you have the following symbols:
- * // extern const custom_type <prefix>FooData[];
- * // extern const custom_type *const <prefix>FooEnd;
- * // extern const unsigned int <prefix>FooSize;
+ * // extern const custom_type <prefix>Foo<data>[];
+ * // extern const custom_type *const <prefix>Foo<end>;
+ * // extern const unsigned int <prefix>Foo<size>;
  * @endcode
  */
 #define INCBIN_EXTERN(...) \
@@ -363,9 +343,9 @@
  * INCBIN_EXTERN(Foo);
  *
  * // Now you have the following symbols:
- * // extern const char <prefix>FooData[];
- * // extern const char *const <prefix>FooEnd;
- * // extern const unsigned int <prefix>FooSize;
+ * // extern const char <prefix>Foo<data>[];
+ * // extern const char *const <prefix>Foo<end>;
+ * // extern const unsigned int <prefix>Foo<size>;
  * @endcode
  */
 #define INCTXT_EXTERN(NAME) \
@@ -388,9 +368,9 @@
  * INCBIN(Icon, "icon.png");
  *
  * // Now you have the following symbols:
- * // const unsigned char <prefix>IconData[];
- * // const unsigned char *const <prefix>IconEnd;
- * // const unsigned int <prefix>IconSize;
+ * // const unsigned char <prefix>Icon<data>[];
+ * // const unsigned char *const <prefix>Icon<end>;
+ * // const unsigned int <prefix>Icon<size>;
  * @endcode
  * 
  * You may specify a custom optional data type as well as the first argument.
@@ -399,9 +379,9 @@
  * INCBIN(custom_type, Icon, "icon.png");
  *
  * // Now you have the following symbols:
- * // const custom_type <prefix>IconData[];
- * // const custom_type *const <prefix>IconEnd;
- * // const unsigned int <prefix>IconSize;
+ * // const custom_type <prefix>Icon<data>[];
+ * // const custom_type *const <prefix>Icon<end>;
+ * // const unsigned int <prefix>Icon<size>;
  * @endcode
  *
  * @warning This must be used in global scope
@@ -468,9 +448,9 @@
  * INCTXT(Readme, "readme.txt");
  *
  * // Now you have the following symbols:
- * // const char <prefix>ReadmeData[];
- * // const char *const <prefix>ReadmeEnd;
- * // const unsigned int <prefix>ReadmeSize;
+ * // const char <prefix>Readme<data>[];
+ * // const char *const <prefix>Readme<end>;
+ * // const unsigned int <prefix>Readme<size>;
  * @endcode
  *
  * @warning This must be used in global scope
