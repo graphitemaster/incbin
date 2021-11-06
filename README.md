@@ -83,7 +83,7 @@ code. The table of the alignments for SIMD this header recognizes is as follows:
 | SIMD                                    | Alignment |
 |-----------------------------------------|-----------|
 | SSE, SSE2, SSE3, SSSE3, SSE4.1, SSE4.2  | 16        |
-| Neon                                    | 16        |
+| Neon, AltiVec                           | 16        |
 | AVX, AVX2                               | 32        |
 | AVX512                                  | 64        |
 

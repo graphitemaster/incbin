@@ -26,7 +26,8 @@
       defined(__SSSE3__)    || \
       defined(__SSE4_1__)   || \
       defined(__SSE4_2__)   || \
-      defined(__neon__)
+      defined(__neon__)     || \
+      defined(__ALTIVEC__)
 # define INCBIN_ALIGNMENT_INDEX 4
 #elif ULONG_MAX != 0xffffffffu
 # define INCBIN_ALIGNMENT_INDEX 3
