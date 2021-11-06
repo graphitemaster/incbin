@@ -1,6 +1,6 @@
 # incbin
 
-Include binary files in your C/C++ applications with ease
+Include binary and textual files in your C/C++ applications with ease
 
 ## Example
 
@@ -11,17 +11,40 @@ Include binary files in your C/C++ applications with ease
 
     // This translation unit now has three symbols
     // const unsigned char gIconData[];
-    // const unsigned char *const gIconEnd; // a marker to the end, take the address to get the ending pointer
+    // const unsigned char *const gIconEnd;
     // const unsigned int gIconSize;
 
     // Reference in other translation units like this
     INCBIN_EXTERN(Icon);
 
-    // This translation unit now has three extern symbols
-    // Use `extern "C"` in case of writing C++ code
+    // This translation unit now has three extern symbols:
     // extern const unsigned char gIconData[];
-    // extern const unsigned char *const gIconEnd; // a marker to the end, take the address to get the ending pointer
+    // extern const unsigned char *const gIconEnd;
     // extern const unsigned int gIconSize;
+
+    // NOTE: Don't forget to use `extern "C"` in case of writing C++ code
+
+    // You may specify an optional type for the included data array as a first
+    // additional argument to INCBIN, the macro is overloaded by arity.
+    INCBIN(MyType, IconTyped, "icon.png")
+    
+    // This translation unit now has three symbols
+    // const MyType gIconTyedData[];
+    // const MyType *const gIconTypedEnd;
+    // const unsigned int gIconTypedSize;
+
+    // A helper macro `INCTXT` exists which uses type `char` by default instead
+    // of `unsigned char` and implicitly adds a null-terminator byte so it can
+    // be used as a string in C.
+    INCTXT(Readme, "readme.md")
+
+    // This translation unit now has three symbols
+    // const char gReadmeData[];
+    // const char *const gReadmeEnd;
+    // const unsigned int gReadmeSize;
+
+    // Note in the case of INCTXT, the gReadmeSize includes the size of the
+    // null-terminator, so subtract one for string length.
 ```
 
 ## Portability
