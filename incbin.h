@@ -159,6 +159,10 @@
 #endif
 
 #if defined(__APPLE__)
+#  include "TargetConditionals.h"
+#  if defined(TARGET_OS_IPHONE) && !defined(INCBIN_SILENCE_BITCODE_WARNING)
+#    warning "incbin is incompatible with bitcode. Using the library will break upload to App Store if you have bitcode enabled. Add `#define INCBIN_SILENCE_BITCODE_WARNING` before including this header to silence this warning."
+#  endif
 /* The directives are different for Apple branded compilers */
 #  define INCBIN_SECTION         INCBIN_OUTPUT_SECTION "\n"
 #  define INCBIN_GLOBAL(NAME)    ".globl " INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "\n"
@@ -466,4 +470,5 @@
 #  define INCTXT(NAME, FILENAME) \
      INCBIN_COMMON(char, NAME, FILENAME, INCBIN_BYTE "0\n")
 #endif
+
 #endif
