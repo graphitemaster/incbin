@@ -9,42 +9,38 @@ Include binary and textual files in your C/C++ applications with ease
 
     INCBIN(Icon, "icon.png");
 
-    // This translation unit now has three symbols
-    // const unsigned char gIconData[];
-    // const unsigned char *const gIconEnd;
-    // const unsigned int gIconSize;
-
     // Reference in other translation units like this
     INCBIN_EXTERN(Icon);
-
-    // This translation unit now has three extern symbols:
-    // extern const unsigned char gIconData[];
-    // extern const unsigned char *const gIconEnd;
-    // extern const unsigned int gIconSize;
 
     // NOTE: Don't forget to use `extern "C"` in case of writing C++ code
 
     // You may specify an optional type for the included data array as a first
-    // additional argument to INCBIN, the macro is overloaded by arity.
+    // additional argument to INCBIN, the macro is overloaded by arity. The
+    // default type is `unsigned char`.
     INCBIN(MyType, IconTyped, "icon.png")
-    
-    // This translation unit now has three symbols
-    // const MyType gIconTyedData[];
-    // const MyType *const gIconTypedEnd;
-    // const unsigned int gIconTypedSize;
 
-    // A helper macro `INCTXT` exists which uses type `char` by default instead
-    // of `unsigned char` and implicitly adds a null-terminator byte so it can
-    // be used as a string in C.
+    // INCTXT is the same as INCBIN but it uses type `char` by default and 
+    // implicitly adds a NUL-terminator byte to the included data, making it
+    // safe to use as a string in C.
     INCTXT(Readme, "readme.md")
 
-    // This translation unit now has three symbols
-    // const char gReadmeData[];
-    // const char *const gReadmeEnd;
-    // const unsigned int gReadmeSize;
+    // Reference in other translation units like this
+    INCTXT_EXTERN(Readme);
 
-    // Note in the case of INCTXT, the gReadmeSize includes the size of the
-    // null-terminator, so subtract one for string length.
+    // NOTE: Since INCTXT adds a NUL-terminator byte, it's size is one byte
+    // larger than that of INCBIN, so subtract one for string length.
+
+    // The macros produce three global (or external) symbols of the form
+    // <type> <prefix><data><name>[]
+    // <type> <prefix><end><name>*
+    // unsigned int <prefix><size><name>
+    //
+    // The <type> by default is unsigned char, unless optionally provided.
+    // The <prefix> by default is "g", you can override it with INCBIN_PREFIX.
+    // The <name> is the identifier you give to INCBIN or INCTXT.
+    // The <data> and <end> are tokens that depend on INCBIN_STYLE, by default
+    // they're "Data" and "End", but they can be changed to "_data" and "_end".
+    // if INCBIN_STYLE is set to INCBIN_STYLE_SNAKE.
 ```
 
 ## Portability
@@ -159,6 +155,16 @@ INCBIN(Foo, "foo.txt");
 // Data is emitted into program memory that never gets copied to RAM
 ```
 
+You may also override the output section for data, and size separately, this is
+useful for Harvard architectures where program memory cannot be directly read
+from the program without special instructions. With this you can chose to put
+the size variable in RAM rather than ROM. This can be done with the macros
+
+```c
+#define INCBIN_OUTPUT_DATA_SECTION "..."
+#define INCBIN_OUTPUT_SIZE_SECTION "..."
+```
+
 ## Explanation
 
 `INCBIN` is a macro which uses the inline assembler provided by almost all
@@ -183,6 +189,9 @@ If you're using a custom prefix, be sure to specify the prefix on the command
 line with `-p <prefix>` so that everything matches up; similarly, if you're
 using a custom style, be sure to specify the style on the command line with
 `-S <style>` as well.
+
+> NOTE: MSVC currently does not support `INCTXT` or custom optional type on
+`INCBIN`. This will be changed in the future.
 
 ## Miscellaneous
 
