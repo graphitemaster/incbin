@@ -118,14 +118,14 @@ int main(int argc, char **argv) {
 
     if (argc == 0) {
 usage:
-        fprintf(stderr, "%s [-help] [-Ipath...] | <files> | [-o output] | [-p prefix]\n", argv[-1]);
+        fprintf(stderr, "%s [-help] [-Ipath...] | <sourcefiles> | [-o output] | [-p prefix]\n", argv[-1]);
         fprintf(stderr, "   -o         - output file [default is \"data.c\"]\n");
         fprintf(stderr, "   -p         - specify a prefix for symbol names (default is \"g\")\n");
         fprintf(stderr, "   -S<style>  - specify a style for symbol generation (default is \"camelcase\")\n");
         fprintf(stderr, "   -I<path>   - specify an include path for the tool to use\n");
         fprintf(stderr, "   -help      - this\n");
         fprintf(stderr, "example:\n");
-        fprintf(stderr, "   %s icon.png music.mp3 -o file.c\n", argv[-1]);
+        fprintf(stderr, "   %s source.c other_source.cpp -o file.c\n", argv[-1]);
         fprintf(stderr, "styles (for -S):\n");
         fprintf(stderr, "   camelcase\n");
         fprintf(stderr, "   snakecase\n");
