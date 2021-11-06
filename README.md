@@ -38,8 +38,8 @@ Include binary and textual files in your C/C++ applications with ease
     // The <type> by default is unsigned char, unless optionally provided.
     // The <prefix> by default is "g", you can override it with INCBIN_PREFIX.
     // The <name> is the identifier you give to INCBIN or INCTXT.
-    // The <data>, <end>, and <size> are tokens that depend on INCBIN_STYLE, by'
-    // default they're "Data","End", and "Size", but they can be changed to
+    // The <data>, <end>, and <size> are tokens that depend on INCBIN_STYLE, by
+    // default they're "Data", "End", and "Size", but they can be changed to
     // "_data", "_end", and "_size" if INCBIN_STYLE is set to INCBIN_STYLE_SNAKE.
 ```
 
