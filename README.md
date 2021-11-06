@@ -38,9 +38,9 @@ Include binary and textual files in your C/C++ applications with ease
     // The <type> by default is unsigned char, unless optionally provided.
     // The <prefix> by default is "g", you can override it with INCBIN_PREFIX.
     // The <name> is the identifier you give to INCBIN or INCTXT.
-    // The <data> and <end> are tokens that depend on INCBIN_STYLE, by default
-    // they're "Data" and "End", but they can be changed to "_data" and "_end".
-    // if INCBIN_STYLE is set to INCBIN_STYLE_SNAKE.
+    // The <data>, <end>, and <size> are tokens that depend on INCBIN_STYLE, by'
+    // default they're "Data","End", and "Size", but they can be changed to
+    // "_data", "_end", and "_size" if INCBIN_STYLE is set to INCBIN_STYLE_SNAKE.
 ```
 
 ## Portability
@@ -98,9 +98,9 @@ instance
     INCBIN(test, "test.txt");
 
     // This translation unit now has three symbols
-    // const unsigned char g_testData[];
-    // const unsigned char *const g_testEnd;
-    // const unsigned int g_testSize;
+    // const unsigned char g_<name><data>[];
+    // const unsigned char *const g_<name><end>;
+    // const unsigned int g_<name><size>;
 ```
 
 You can also choose to have no prefix by defining the prefix with nothing, for example:
@@ -111,9 +111,9 @@ You can also choose to have no prefix by defining the prefix with nothing, for e
     INCBIN(test, "test.txt");
 
     // This translation unit now has three symbols
-    // const unsigned char testData[];
-    // const unsigned char *const testEnd;
-    // const unsigned int testSize;
+    // const unsigned char <name><data>[];
+    // const unsigned char *const <name><end>;
+    // const unsigned int <name><size>;
 ```
 
 ## Style
@@ -132,9 +132,9 @@ For instance:
     INCBIN(test, "test.txt");
 
     // This translation unit now has three symbols
-    // const unsigned char gtest_data[];
-    // const unsigned char *const gtest_end;
-    // const unsigned int gtest_size;
+    // const unsigned char <prefix><name>_data[];
+    // const unsigned char *const <prefix><name>_end;
+    // const unsigned int <prefix><name>_size;
 ```
 
 Combining both the style and prefix allows for you to adjust `incbin.h` to suite
@@ -152,7 +152,10 @@ For example, to emit data into program memory for
 #define INCBIN_OUTPUT_SECTION ".irom.text"
 #include "incbin.h"
 INCBIN(Foo, "foo.txt");
-// Data is emitted into program memory that never gets copied to RAM
+// The three symbols below will all go to ".irom.text"
+// <type> <prefix><data><name>[]
+// <type> <prefix><end><name>*
+// unsigned int <prefix><size><name>
 ```
 
 You may also override the output section for data, and size separately, this is
@@ -161,7 +164,10 @@ from the program without special instructions. With this you can chose to put
 the size variable in RAM rather than ROM. This can be done with the macros
 
 ```c
+// <prefix><data><name> and <prefix><end><name> goes into custom data section
 #define INCBIN_OUTPUT_DATA_SECTION "..."
+
+// <prefix><size><name> goes into custom size section.
 #define INCBIN_OUTPUT_SIZE_SECTION "..."
 ```
 
