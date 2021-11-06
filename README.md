@@ -17,12 +17,12 @@ Include binary and textual files in your C/C++ applications with ease
     // You may specify an optional type for the included data array as a first
     // additional argument to INCBIN, the macro is overloaded by arity. The
     // default type is `unsigned char`.
-    INCBIN(MyType, IconTyped, "icon.png")
+    INCBIN(MyType, IconTyped, "icon.png");
 
     // INCTXT is the same as INCBIN but it uses type `char` by default and 
     // implicitly adds a NUL-terminator byte to the included data, making it
     // safe to use as a string in C.
-    INCTXT(Readme, "readme.md")
+    INCTXT(Readme, "readme.md");
 
     // Reference in other translation units like this
     INCTXT_EXTERN(Readme);
