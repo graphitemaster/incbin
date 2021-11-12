@@ -174,7 +174,7 @@
 #  define INCBIN_TYPE(...)
 #else
 #  define INCBIN_SECTION         ".section " INCBIN_OUTPUT_SECTION "\n"
-#  define INCBIN_GLOBAL(NAME)    ".global " INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "\n"
+#  define INCBIN_GLOBAL(NAME)    ".global " INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "\n"
 #  if defined(__ghs__)
 #    define INCBIN_INT           ".word "
 #  else
