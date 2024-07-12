@@ -82,11 +82,11 @@
 #  define INCBIN_MACRO ".incbin"
 #endif
 
-#ifndef _MSC_VER
-#  define INCBIN_ALIGN \
-    __attribute__((aligned(INCBIN_ALIGNMENT)))
+#if defined(_MSC_VER) && !defined(__clang__)
+/* On cl.exe we don't use inline assembly, so there's no reason to set alignment */
+#  define INCBIN_ALIGN /* __declspec(align(INCBIN_ALIGNMENT)) */
 #else
-#  define INCBIN_ALIGN __declspec(align(INCBIN_ALIGNMENT))
+#  define INCBIN_ALIGN __attribute__((aligned(INCBIN_ALIGNMENT)))
 #endif
 
 #if defined(__arm__) || /* GNU C and RealView */ \
@@ -465,9 +465,9 @@
  * To externally reference the data included by this in another translation unit
  * please @see INCBIN_EXTERN.
  */
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && !defined(__clang__)
 #  define INCTXT(NAME, FILENAME) \
-     INCBIN_EXTERN(NAME)
+     INCBIN_EXTERN_2(char, NAME)
 #else
 #  define INCTXT(NAME, FILENAME) \
      INCBIN_COMMON(char, NAME, FILENAME, INCBIN_BYTE "0\n")
