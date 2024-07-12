@@ -8,6 +8,16 @@
  */
 #ifndef INCBIN_HDR
 #define INCBIN_HDR
+
+#ifndef _MSC_VER
+#  include <stdint.h>
+#  if defined(UINTPTR_MAX) && defined(UINT64_MAX) && !defined(__LP64__)
+#    if UINTPTR_MAX == UINT64_MAX
+#      define __LP64__ 1
+#    endif
+#  endif
+#endif
+
 #include <limits.h>
 #if   defined(__AVX512BW__) || \
       defined(__AVX512CD__) || \
@@ -30,9 +40,11 @@
       defined(__ARM_NEON)   || \
       defined(__ALTIVEC__)
 # define INCBIN_ALIGNMENT_INDEX 4
-#elif ULONG_MAX != 0xffffffffu
+#elif defined(__LP64__)     || \
+      defined(_LP64)        || \
+      defined(_WIN64)
 # define INCBIN_ALIGNMENT_INDEX 3
-# else
+#else
 # define INCBIN_ALIGNMENT_INDEX 2
 #endif
 
