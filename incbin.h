@@ -9,7 +9,7 @@
 #ifndef INCBIN_HDR
 #define INCBIN_HDR
 
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) || defined(__clang__)
 #  include <stdint.h>
 #  if defined(UINTPTR_MAX) && defined(UINT64_MAX) && !defined(__LP64__)
 #    if UINTPTR_MAX == UINT64_MAX
