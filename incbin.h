@@ -161,7 +161,7 @@
 #endif
 
 #if defined(__APPLE__)
-#  include "TargetConditionals.h"
+#  include <TargetConditionals.h>
 #  if defined(TARGET_OS_IPHONE) && !defined(INCBIN_SILENCE_BITCODE_WARNING)
 #    warning "incbin is incompatible with bitcode. Using the library will break upload to App Store if you have bitcode enabled. Add `#define INCBIN_SILENCE_BITCODE_WARNING` before including this header to silence this warning."
 #  endif
