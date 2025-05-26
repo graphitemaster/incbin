@@ -131,6 +131,8 @@
 #if !defined(INCBIN_OUTPUT_SECTION)
 #  if defined(__APPLE__)
 #    define INCBIN_OUTPUT_SECTION ".const_data"
+#  elif defined(__EMSCRIPTEN__)
+#    define INCBIN_OUTPUT_SECTION ".data"
 #  else
 #    define INCBIN_OUTPUT_SECTION ".rodata"
 #  endif
@@ -173,8 +175,13 @@
 #  define INCBIN_BYTE            ".byte "
 #  define INCBIN_TYPE(...)
 #else
-#  define INCBIN_SECTION         ".section " INCBIN_OUTPUT_SECTION "\n"
-#  define INCBIN_GLOBAL(NAME)    ".global " INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "\n"
+#  if defined(__EMSCRIPTEN__)
+#    define INCBIN_SECTION         ".section " INCBIN_OUTPUT_SECTION ",\"\",@" "\n"
+#    define INCBIN_GLOBAL(NAME)    ".global " INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "\n"  
+#  else
+#    define INCBIN_SECTION         ".section " INCBIN_OUTPUT_SECTION "\n"
+#    define INCBIN_GLOBAL(NAME)    ".global " INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME "\n"
+#  endif
 #  if defined(__ghs__)
 #    define INCBIN_INT           ".word "
 #  else
@@ -423,15 +430,26 @@
             INCBIN_ALIGN_BYTE \
             INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(END) ":\n" \
                 INCBIN_BYTE "1\n" \
+            INCBIN_WEB_SIZE(END, NAME, 0)\
             INCBIN_GLOBAL_LABELS(NAME, SIZE) \
             INCBIN_ALIGN_HOST \
             INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(SIZE) ":\n" \
                 INCBIN_INT INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(END) " - " \
                            INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(DATA) "\n" \
             INCBIN_ALIGN_HOST \
+            INCBIN_WEB_SIZE(SIZE, NAME, 4)\
+            INCBIN_WEB_DATA_SIZE(NAME)\
             ".text\n" \
     ); \
     INCBIN_EXTERN(TYPE, NAME)
+#endif
+
+#if defined(__EMSCRIPTEN__)
+#   define INCBIN_WEB_SIZE(VAR_TYPE, NAME, SIZE) ".size " INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(VAR_TYPE) ", " AS_STR(SIZE) "\n"
+#   define INCBIN_WEB_DATA_SIZE(NAME) ".size " INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(DATA) ", " INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(END) " - " INCBIN_MANGLE INCBIN_STRINGIZE(INCBIN_PREFIX) #NAME INCBIN_STYLE_STRING(DATA) "\n" 
+#else
+#   define INCBIN_WEB_SIZE(VAR_TYPE, NAME, SIZE)
+#   define INCBIN_WEB_DATA_SIZE(NAME)
 #endif
 
 /**
