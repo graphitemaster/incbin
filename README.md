@@ -31,8 +31,8 @@ Include binary and textual files in your C/C++ applications with ease
     // larger than that of INCBIN, so subtract one for string length.
 
     // The macros produce three global (or external) symbols of the form
-    // <type> <prefix><data><name>[]
-    // <type> <prefix><end><name>*
+    // <type> <prefix><name><data>[]
+    // <type> <prefix><name><end>*
     // unsigned int <prefix><size><name>
     //
     // The <type> by default is unsigned char, unless optionally provided.
